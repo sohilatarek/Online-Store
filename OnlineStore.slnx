@@ -1,0 +1,23 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU" />
+    </Configurations>
+    <Folder Name="/src/">
+        <Project Path="src/OnlineStore.Domain/OnlineStore.Domain.csproj" />
+        <Project Path="src/OnlineStore.Application/OnlineStore.Application.csproj" />
+        <Project Path="src/OnlineStore.EntityFrameworkCore/OnlineStore.EntityFrameworkCore.csproj" />
+        <Project Path="src/OnlineStore.Domain.Shared/OnlineStore.Domain.Shared.csproj" />
+        <Project Path="src/OnlineStore.Application.Contracts/OnlineStore.Application.Contracts.csproj" />
+        <Project Path="src/OnlineStore.HttpApi/OnlineStore.HttpApi.csproj" />
+        <Project Path="src/OnlineStore.HttpApi.Client/OnlineStore.HttpApi.Client.csproj" />
+        <Project Path="src/OnlineStore.DbMigrator/OnlineStore.DbMigrator.csproj" />
+        <Project Path="src/OnlineStore.HttpApi.Host/OnlineStore.HttpApi.Host.csproj" />
+    </Folder>
+    <Folder Name="/test/">
+        <Project Path="test/OnlineStore.Application.Tests/OnlineStore.Application.Tests.csproj" />
+        <Project Path="test/OnlineStore.EntityFrameworkCore.Tests/OnlineStore.EntityFrameworkCore.Tests.csproj" />
+        <Project Path="test/OnlineStore.TestBase/OnlineStore.TestBase.csproj" />
+        <Project Path="test/OnlineStore.Domain.Tests/OnlineStore.Domain.Tests.csproj" />
+        <Project Path="test/OnlineStore.HttpApi.Client.ConsoleTestApp/OnlineStore.HttpApi.Client.ConsoleTestApp.csproj" />
+    </Folder>
+</Solution>
