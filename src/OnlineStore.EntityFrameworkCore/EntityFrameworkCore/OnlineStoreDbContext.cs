@@ -55,6 +55,9 @@ public class OnlineStoreDbContext :
     public DbSet<Tenant> Tenants { get; set; }
     public DbSet<TenantConnectionString> TenantConnectionStrings { get; set; }
 
+    public DbSet<Product> Products { get; set; }
+    public DbSet<Category> Categories { get; set; }
+
     #endregion
 
     public OnlineStoreDbContext(DbContextOptions<OnlineStoreDbContext> options)
@@ -78,7 +81,11 @@ public class OnlineStoreDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
-        
+
+
+        builder.ApplyConfiguration(new ProductConfiguration());
+        builder.ApplyConfiguration(new CategoryConfiguration());
+
         /* Configure your own tables/entities inside here */
 
         //builder.Entity<YourEntity>(b =>
