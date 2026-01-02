@@ -1,23 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using OnlineStore.Categories;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-public class CategoryDataSeeder : IDataSeedContributor, ITransientDependency
+namespace OnlineStore.categories
 {
-	private readonly IRepository<Category, int> _categoriesRepository;
-
-	public CategoryDataSeeder(IRepository<Category, int> categoriesRepository)
+	public class CategoryDataSeeder : IDataSeedContributor, ITransientDependency
 	{
-		_categoriesRepository = categoriesRepository;
-	}
+		private readonly IRepository<Category, int> _categoriesRepository;
 
-	public async Task SeedAsync(DataSeedContext context)
-	{
-		if (!await _categoriesRepository.AnyAsync())
+		public CategoryDataSeeder(IRepository<Category, int> categoriesRepository)
 		{
-			var categories = new List<Category>
+			_categoriesRepository = categoriesRepository;
+		}
+
+		public async Task SeedAsync(DataSeedContext context)
+		{
+			if (!await _categoriesRepository.AnyAsync())
+			{
+				var categories = new List<Category>
 			{
 				new Category(
 					id: 1,
@@ -52,7 +55,8 @@ public class CategoryDataSeeder : IDataSeedContributor, ITransientDependency
 				)
 			};
 
-			await _categoriesRepository.InsertManyAsync(categories);
+				await _categoriesRepository.InsertManyAsync(categories);
+			}
 		}
 	}
 }

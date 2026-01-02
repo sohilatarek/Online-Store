@@ -10,12 +10,26 @@ export const APP_ROUTE_PROVIDER = [
 function configureRoutes() {
   const routes = inject(RoutesService);
   routes.add([
-      {
-        path: '/',
-        name: '::Menu:Home',
-        iconClass: 'fas fa-home',
-        order: 1,
-        layout: eLayoutType.application,
-      },
+    {
+      path: '/',
+      name: '::Menu:Home',
+      iconClass: 'fas fa-home',
+      order: 1,
+      layout: eLayoutType.application,
+    },
+    {
+      path: 'categories',
+      name: 'Categories',
+      iconClass: 'fas fa-list',
+      order: 2,
+      layout: eLayoutType.application,
+    },
+    {
+      path: 'products',
+      name: 'Products',
+      iconClass: 'fas fa-box',
+      order: 3,
+      layout: eLayoutType.application,
+    },
   ]);
 }

@@ -14,6 +14,9 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using OnlineStore.Products;
+using OnlineStore.Configurations;
+using OnlineStore.Categories;
 
 namespace OnlineStore.EntityFrameworkCore;
 

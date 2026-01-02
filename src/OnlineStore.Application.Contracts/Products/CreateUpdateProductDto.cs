@@ -1,10 +1,11 @@
-using OnlineStore.Categories;
-using Volo.Abp.Domain.Entities.Auditing;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Volo.Abp.Application.Dtos;
 
 namespace OnlineStore.Products
 {
-
-    public class Product : FullAuditedEntity<int>
+    public class CreateUpdateProductDto : EntityDto<int>
     {
         public string NameAr { get; set; }
 
@@ -16,7 +17,6 @@ namespace OnlineStore.Products
 
         public int CategoryId { get; set; }
 
-        public virtual Category Category { get; set; }
-
+        public string ExtraDescription { get; set; }
     }
 }

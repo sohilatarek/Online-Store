@@ -2,9 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using OnlineStore;
+using OnlineStore.Products;
 
 
-internal class ProductConfiguration : IEntityTypeConfiguration<Product>
+namespace OnlineStore.Configurations
+{
+    internal class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
@@ -23,3 +26,4 @@ internal class ProductConfiguration : IEntityTypeConfiguration<Product>
             builder.ToTable("Products");
         }
     }
+}

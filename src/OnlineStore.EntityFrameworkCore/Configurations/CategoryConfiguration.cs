@@ -2,8 +2,13 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using OnlineStore;
+using OnlineStore.Categories;
 
-internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
+
+
+namespace OnlineStore.Configurations
+{
+    internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
@@ -18,3 +23,4 @@ internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
             builder.ToTable("Categories");
         }
     }
+}
