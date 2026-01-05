@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineStore.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OnlineStore.Migrations
 {
     [DbContext(typeof(OnlineStoreDbContext))]
-    partial class OnlineStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260104210927_UpdateEntities")]
+    partial class UpdateEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,9 +66,7 @@ namespace OnlineStore.Migrations
                         .HasColumnType("nvarchar(2000)");
 
                     b.Property<int>("DisplayOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -73,9 +74,7 @@ namespace OnlineStore.Migrations
                         .HasColumnName("ExtraProperties");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -101,30 +100,7 @@ namespace OnlineStore.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("TenantId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("DisplayOrder")
-                        .HasDatabaseName("IX_Categories_DisplayOrder");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("IX_Categories_IsActive");
-
-                    b.HasIndex("NameAr", "TenantId")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_Categories_NameAr_TenantId")
-                        .HasFilter("[IsDeleted] = 0");
-
-                    b.HasIndex("NameEn", "TenantId")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_Categories_NameEn_TenantId")
-                        .HasFilter("[IsDeleted] = 0");
-
-                    b.HasIndex("TenantId", "IsActive")
-                        .HasDatabaseName("IX_Categories_TenantId_IsActive");
 
                     b.ToTable("Categories", (string)null);
                 });
@@ -179,10 +155,7 @@ namespace OnlineStore.Migrations
                         .HasColumnName("ExtraProperties");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true)
-                        .HasComment("Whether product is active and can be managed");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -191,10 +164,7 @@ namespace OnlineStore.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<bool>("IsPublished")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasComment("Whether product is visible to customers");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2")
@@ -215,64 +185,20 @@ namespace OnlineStore.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)")
-                        .HasComment("Product price in system currency");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("SKU")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("Stock Keeping Unit - unique product identifier");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StockQuantity")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasComment("Available inventory quantity");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("TenantId");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId")
-                        .HasDatabaseName("IX_Products_CategoryId_Covering");
+                    b.HasIndex("CategoryId");
 
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("CategoryId"), new[] { "NameEn", "NameAr", "Price", "StockQuantity", "IsActive", "IsPublished" });
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("IX_Products_IsActive");
-
-                    b.HasIndex("IsPublished")
-                        .HasDatabaseName("IX_Products_IsPublished");
-
-                    b.HasIndex("Price")
-                        .HasDatabaseName("IX_Products_Price");
-
-                    b.HasIndex("SKU")
-                        .HasDatabaseName("IX_Products_SKU");
-
-                    b.HasIndex("StockQuantity")
-                        .HasDatabaseName("IX_Products_StockQuantity");
-
-                    b.HasIndex("CategoryId", "IsActive")
-                        .HasDatabaseName("IX_Products_CategoryId_IsActive");
-
-                    b.HasIndex("SKU", "TenantId")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_Products_SKU_TenantId")
-                        .HasFilter("[IsDeleted] = 0");
-
-                    b.HasIndex("TenantId", "IsActive", "IsPublished")
-                        .HasDatabaseName("IX_Products_TenantId_IsActive_IsPublished");
-
-                    b.ToTable("Products", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Products_Price", "[Price] >= 0");
-
-                            t.HasCheckConstraint("CK_Products_StockQuantity", "[StockQuantity] >= 0");
-                        });
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
@@ -2140,7 +2066,7 @@ namespace OnlineStore.Migrations
                     b.HasOne("OnlineStore.Categories.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");

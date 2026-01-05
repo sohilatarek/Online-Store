@@ -2,7 +2,7 @@
 using Volo.Abp.SettingManagement;
 using Volo.Abp.Account;
 using Volo.Abp.Identity;
-using Volo.Abp.AutoMapper;  // ✅ Add this
+using Volo.Abp.AutoMapper; 
 using Volo.Abp.Mapperly;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Modularity;
@@ -15,7 +15,7 @@ namespace OnlineStore;
 [DependsOn(
     typeof(OnlineStoreDomainModule),
     typeof(OnlineStoreApplicationContractsModule),
-    typeof(AbpAutoMapperModule),  // ✅ Add this dependency
+    typeof(AbpAutoMapperModule),  
     typeof(AbpPermissionManagementApplicationModule),
     typeof(AbpFeatureManagementApplicationModule),
     typeof(AbpIdentityApplicationModule),
