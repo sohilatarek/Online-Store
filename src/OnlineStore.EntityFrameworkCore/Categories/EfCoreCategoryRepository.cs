@@ -78,6 +78,15 @@ namespace OnlineStore.Repositories
                 .ToDictionaryAsync(x => x.CategoryId, x => x.Count, cancellationToken);
         }
 
+        public async Task<int> GetProductCountAsync(int categoryId, CancellationToken cancellationToken = default)
+        {
+            var dbContext = await GetDbContextAsync();
+
+            return await dbContext.Products
+                .Where(p => p.CategoryId == categoryId && !p.IsDeleted)
+                .CountAsync(cancellationToken);
+        }
+
         public async Task<bool> HasProductsAsync(int categoryId, CancellationToken cancellationToken = default)
         {
             var dbContext = await GetDbContextAsync();

@@ -1,47 +1,133 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Localization;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using OnlineStore.Categories;
+using OnlineStore.Localization;
+using OnlineStore.Products;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Volo.Abp.Domain.Repositories;
 
-namespace OnlineStore.Products
+namespace OnlineStore.Validators
 {
-    internal class CreateUpdateProductValidator : AbstractValidator<CreateUpdateProductDto>
+    
+    public class CreateUpdateProductValidator : AbstractValidator<CreateUpdateProductDto>
     {
-        private readonly IStringLocalizerFactory stringLocalizerFactory;
+        private readonly IProductRepository _productRepository;
+        private readonly IRepository<Category, int> _categoryRepository;
+        private readonly IStringLocalizer<OnlineStoreResource> _localizer;
 
-        //private IStringLocalizer PrdLoc => stringLocalizerFactory.Create(typeof(ProductsResource));
-        //private IStringLocalizer Loc => stringLocalizerFactory.Create(typeof(Demo1Resource));
-        //public CreateUpdateProductValidator(IStringLocalizerFactory stringLocalizerFactory)
-        //{
-        //    this.stringLocalizerFactory = stringLocalizerFactory;
+        public CreateUpdateProductValidator(
+            IProductRepository productRepository,
+            IRepository<Category, int> categoryRepository,
+            IStringLocalizer<OnlineStoreResource> localizer)
+        {
+            _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
+            _localizer = localizer;
 
-        //    RuleFor(x => x.NameAr)
-        //        .NotEmpty()
-        //        .MaximumLength(Demo1Consts.GeneralTextMaxLength)
-        //        .WithErrorCode(Demo1DomainErrorCodes.INVALID_PRODUCT_DATA_NAME_AR)
-        //        .WithMessage(PrdLoc["Products:InvalidProductNameAr"]);
-        //    RuleFor(x => x.NameEn)
-        //        .NotEmpty()
-        //        .MaximumLength(Demo1Consts.GeneralTextMaxLength)
-        //        .WithErrorCode(Demo1DomainErrorCodes.INVALID_PRODUCT_DATA_NAME_EN)
-        //        .WithMessage(PrdLoc["Products:InvalidProductNameEn"]);
-        //    RuleFor(x => x.DescriptionAr)
-        //        .NotEmpty()
-        //        .MaximumLength(Demo1Consts.DescriptionTextMaxLength)
-        //        .WithErrorCode(Demo1DomainErrorCodes.INVALID_PRODUCT_DATA_DESC_AR)
-        //        .WithMessage(PrdLoc["Products:InvalidProductDescAr"]);
-        //    RuleFor(x => x.DescriptionEn)
-        //        .NotEmpty()
-        //        .MaximumLength(Demo1Consts.DescriptionTextMaxLength)
-        //        .WithErrorCode(Demo1DomainErrorCodes.INVALID_PRODUCT_DATA_DESC_EN)
-        //        .WithMessage(PrdLoc["Products:InvalidProductDescEn"]);
-        //    RuleFor(x => x.CategoryId)
-        //        .NotEmpty()
-        //        .WithErrorCode(Demo1DomainErrorCodes.INVALID_PRODUCT_CATEGORY)
-        //        .WithMessage(PrdLoc["Products:InvalidProductCategory"]);}
 
-        //do validation exception also
+            RuleFor(x => x.NameAr)
+                .NotEmpty()
+                .WithMessage(_localizer["Validation:Product:NameArRequired"])
+                .MaximumLength(500)
+                .WithMessage(_localizer["Validation:Product:NameArMaxLength"]);
+
+
+            RuleFor(x => x.NameEn)
+                .NotEmpty()
+                .WithMessage(_localizer["Validation:Product:NameEnRequired"])
+                .MaximumLength(500)
+                .WithMessage(_localizer["Validation:Product:NameEnMaxLength"]);
+
+            RuleFor(x => x.DescriptionAr)
+                .NotEmpty()
+                .WithMessage(_localizer["Validation:Product:DescriptionArRequired"])
+                .MaximumLength(2000)
+                .WithMessage(_localizer["Validation:Product:DescriptionArMaxLength"]);
+
         
+            RuleFor(x => x.DescriptionEn)
+                .NotEmpty()
+                .WithMessage(_localizer["Validation:Product:DescriptionEnRequired"])
+                .MaximumLength(2000)
+                .WithMessage(_localizer["Validation:Product:DescriptionEnMaxLength"]);
+
+
+            RuleFor(x => x.SKU)
+                .NotEmpty()
+                .WithMessage(_localizer["Validation:Product:SKURequired"])
+                .MaximumLength(50)
+                .WithMessage(_localizer["Validation:Product:SKUMaxLength"])
+                .Must(BeValidSKUFormat)
+                .WithMessage(_localizer["Validation:Product:InvalidSKUFormat"])
+                .MustAsync(BeUniqueSKUAsync)
+                .WithMessage(_localizer["Validation:Product:SKUAlreadyExists"]);
+
+        
+
+            RuleFor(x => x.Price)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage(_localizer["Validation:Product:PriceMustBePositive"])
+                .LessThanOrEqualTo(OnlineStore.OnlineStoreConsts.MaxPrice)
+                .WithMessage(_localizer["Validation:Product:PriceTooHigh"]);
+
+          
+            RuleFor(x => x.StockQuantity)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage(_localizer["Validation:Product:StockMustBePositive"])
+                .LessThanOrEqualTo(OnlineStore.OnlineStoreConsts.MaxStockQuantity)
+                .WithMessage(_localizer["Validation:Product:StockTooHigh"]);
+
+
+            RuleFor(x => x.CategoryId)
+                .GreaterThan(0)
+                .WithMessage(_localizer["Validation:Product:CategoryRequired"])
+                .MustAsync(CategoryExistsAsync)
+                .WithMessage(_localizer["Validation:Product:CategoryNotFound"]);
+
+
+            RuleFor(x => x)
+                .Must(dto => !dto.IsPublished || dto.IsActive)
+                .WithMessage(_localizer["Validation:Product:CannotPublishInactive"])
+                .WithName("IsPublished");
+
+          
+            When(x => x.IsPublished && x.StockQuantity == 0, () =>
+            {
+                RuleFor(x => x.StockQuantity)
+                    .NotEqual(0)
+                    .WithMessage(_localizer["Validation:Product:PublishingWithZeroStock"])
+                    .WithSeverity(Severity.Warning);
+            });
+        }
+
+      
+        private bool BeValidSKUFormat(string sku)
+        {
+            if (string.IsNullOrWhiteSpace(sku))
+                return false;
+
+            // Allow only uppercase letters, numbers, and hyphens
+            var regex = new Regex(@"^[A-Z0-9-]+$");
+            return regex.IsMatch(sku);
+        }
+
+        
+        private async Task<bool> BeUniqueSKUAsync(
+            CreateUpdateProductDto dto,
+            string sku,
+            CancellationToken cancellationToken)
+        {
+            return await _productRepository.IsSKUUniqueAsync(sku, dto.Id);
+        }
+
+    
+        private async Task<bool> CategoryExistsAsync(
+            int categoryId,
+            CancellationToken cancellationToken)
+        {
+            return await _categoryRepository.AnyAsync(c => c.Id == categoryId, cancellationToken);
+        }
     }
 }

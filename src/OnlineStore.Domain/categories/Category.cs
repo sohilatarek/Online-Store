@@ -1,4 +1,5 @@
 ﻿using System;
+using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -83,7 +84,9 @@ namespace OnlineStore.Categories
         {
             if (newOrder < 0)
             {
-                throw new ArgumentException("Display order must be a positive number", nameof(newOrder));
+                throw new BusinessException("OnlineStore:007")
+                    .WithData("DisplayOrder", newOrder)
+                    .WithData("Message", "Display order must be a positive number.");
             }
 
             DisplayOrder = newOrder;
@@ -99,10 +102,10 @@ namespace OnlineStore.Categories
             string descriptionEn,
             int displayOrder)
         {
-            NameAr = nameAr;
-            NameEn = nameEn;
-            DescriptionAr = descriptionAr;
-            DescriptionEn = descriptionEn;
+            NameAr = Check.NotNullOrWhiteSpace(nameAr, nameof(nameAr));
+            NameEn = Check.NotNullOrWhiteSpace(nameEn, nameof(nameEn));
+            DescriptionAr = Check.NotNullOrWhiteSpace(descriptionAr, nameof(descriptionAr));
+            DescriptionEn = Check.NotNullOrWhiteSpace(descriptionEn, nameof(descriptionEn));
             SetDisplayOrder(displayOrder);
         }
     }

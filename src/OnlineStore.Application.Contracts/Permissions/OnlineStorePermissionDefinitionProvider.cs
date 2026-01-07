@@ -1,22 +1,74 @@
 using OnlineStore.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
-using Volo.Abp.MultiTenancy;
 
-namespace OnlineStore.Permissions;
-
-public class OnlineStorePermissionDefinitionProvider : PermissionDefinitionProvider
+namespace OnlineStore.Permissions
 {
-    public override void Define(IPermissionDefinitionContext context)
+  
+    public class OnlineStorePermissionDefinitionProvider : PermissionDefinitionProvider
     {
-        var myGroup = context.AddGroup(OnlineStorePermissions.GroupName);
+        public override void Define(IPermissionDefinitionContext context)
+        {
+            // Create the permission group
+            var onlineStoreGroup = context.AddGroup(
+                OnlineStorePermissions.GroupName,
+                L("Permission:OnlineStore"));
 
-        //Define your own permissions here. Example:
-        //myGroup.AddPermission(OnlineStorePermissions.MyPermission1, L("Permission:MyPermission1"));
-    }
+            // ==========================================
+            // CATEGORIES PERMISSIONS
+            // ==========================================
 
-    private static LocalizableString L(string name)
-    {
-        return LocalizableString.Create<OnlineStoreResource>(name);
+            var categoriesPermission = onlineStoreGroup.AddPermission(
+                OnlineStorePermissions.Categories.Default,
+                L("Permission:Categories"));
+
+            categoriesPermission.AddChild(
+                OnlineStorePermissions.Categories.Create,
+                L("Permission:Categories.Create"));
+
+            categoriesPermission.AddChild(
+                OnlineStorePermissions.Categories.Edit,
+                L("Permission:Categories.Edit"));
+
+            categoriesPermission.AddChild(
+                OnlineStorePermissions.Categories.Delete,
+                L("Permission:Categories.Delete"));
+
+            // ==========================================
+            // PRODUCTS PERMISSIONS
+            // ==========================================
+
+            var productsPermission = onlineStoreGroup.AddPermission(
+                OnlineStorePermissions.Products.Default,
+                L("Permission:Products"));
+
+            productsPermission.AddChild(
+                OnlineStorePermissions.Products.Create,
+                L("Permission:Products.Create"));
+
+            productsPermission.AddChild(
+                OnlineStorePermissions.Products.Edit,
+                L("Permission:Products.Edit"));
+
+            productsPermission.AddChild(
+                OnlineStorePermissions.Products.Delete,
+                L("Permission:Products.Delete"));
+
+            productsPermission.AddChild(
+                OnlineStorePermissions.Products.Publish,
+                L("Permission:Products.Publish"));
+
+            productsPermission.AddChild(
+                OnlineStorePermissions.Products.ManageStock,
+                L("Permission:Products.ManageStock"));
+        }
+
+        /// <summary>
+        /// Helper method for localization
+        /// </summary>
+        private static LocalizableString L(string name)
+        {
+            return LocalizableString.Create<OnlineStoreResource>(name);
+        }
     }
 }

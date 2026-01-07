@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Volo.Abp.Application.Dtos;
 
 namespace OnlineStore.Categories
@@ -14,5 +12,10 @@ namespace OnlineStore.Categories
         public string DescriptionAr { get; set; }
 
         public string DescriptionEn { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public int DisplayOrder { get; set; }
+        public int ProductCount { get; set; }
     }
 }

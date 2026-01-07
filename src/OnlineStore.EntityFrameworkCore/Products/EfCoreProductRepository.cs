@@ -5,6 +5,7 @@ using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using OnlineStore;
 using OnlineStore.EntityFrameworkCore;
 using OnlineStore.Products;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
@@ -45,10 +46,6 @@ namespace OnlineStore.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Checks if SKU is unique
-        /// Uses UQ_Products_SKU_TenantId index
-        /// </summary>
         public async Task<bool> IsSKUUniqueAsync(
             string sku,
             int? excludeId = null,
@@ -62,14 +59,9 @@ namespace OnlineStore.Repositories
             {
                 query = query.Where(p => p.Id != excludeId.Value);
             }
-
-            return !await query.AnyAsync(cancellationToken);
+        return !await query.AnyAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Finds a product by SKU
-        /// Uses IX_Products_SKU index
-        /// </summary>
         public async Task<Product> FindBySKUAsync(
             string sku,
             CancellationToken cancellationToken = default)
@@ -82,10 +74,6 @@ namespace OnlineStore.Repositories
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Gets products with low stock
-        /// Uses IX_Products_StockQuantity index
-        /// </summary>
         public async Task<List<Product>> GetLowStockAsync(
             int threshold = 10,
             CancellationToken cancellationToken = default)
@@ -124,10 +112,6 @@ namespace OnlineStore.Repositories
                 .ToDictionaryAsync(x => x.CategoryId, x => x.TotalStock, cancellationToken);
         }
 
-        /// <summary>
-        /// Gets products with advanced filtering and pagination
-        /// Uses multiple indexes for optimal performance
-        /// </summary>
         public async Task<List<Product>> GetListAsync(
             int skipCount,
             int maxResultCount,
@@ -138,6 +122,9 @@ namespace OnlineStore.Repositories
             string searchTerm = null,
             decimal? minPrice = null,
             decimal? maxPrice = null,
+            bool? isLowStock = null,
+            int? lowStockThreshold = null,
+            bool? isOutOfStock = null,
             CancellationToken cancellationToken = default)
         {
             var dbSet = await GetDbSetAsync();
@@ -180,6 +167,16 @@ namespace OnlineStore.Repositories
                 query = query.Where(p => p.Price <= maxPrice.Value);
             }
 
+            if (isOutOfStock == true)
+            {
+                query = query.Where(p => p.StockQuantity == 0);
+            }
+            else if (isLowStock == true)
+            {
+                var threshold = lowStockThreshold ?? OnlineStore.OnlineStoreConsts.DefaultLowStockThreshold;
+                query = query.Where(p => p.StockQuantity > 0 && p.StockQuantity <= threshold);
+            }
+
             // Apply sorting
             if (!string.IsNullOrWhiteSpace(sorting))
             {
@@ -196,9 +193,7 @@ namespace OnlineStore.Repositories
             return await query.ToListAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Gets the total count with filtering
-        /// </summary>
+    
         public async Task<long> GetCountAsync(
             int? categoryId = null,
             bool? isActive = null,
@@ -206,6 +201,9 @@ namespace OnlineStore.Repositories
             string searchTerm = null,
             decimal? minPrice = null,
             decimal? maxPrice = null,
+            bool? isLowStock = null,
+            int? lowStockThreshold = null,
+            bool? isOutOfStock = null,
             CancellationToken cancellationToken = default)
         {
             var dbSet = await GetDbSetAsync();
@@ -246,7 +244,36 @@ namespace OnlineStore.Repositories
                 query = query.Where(p => p.Price <= maxPrice.Value);
             }
 
+           
+            if (isOutOfStock == true)
+            {
+                query = query.Where(p => p.StockQuantity == 0);
+            }
+            else if (isLowStock == true)
+            {
+                var threshold = lowStockThreshold ?? OnlineStore.OnlineStoreConsts.DefaultLowStockThreshold;
+                query = query.Where(p => p.StockQuantity > 0 && p.StockQuantity <= threshold);
+            }
+
             return await query.LongCountAsync(cancellationToken);
+        }
+        
+       
+        public async Task<Product> GetWithCategoryAsync(
+            int id,
+            bool includeCategory = true,
+            CancellationToken cancellationToken = default)
+        {
+            var dbSet = await GetDbSetAsync();
+
+            var query = dbSet.AsQueryable();
+
+            if (includeCategory)
+            {
+                query = query.Include(p => p.Category);
+            }
+
+            return await query.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         }
 
         /// <summary>
@@ -285,6 +312,24 @@ namespace OnlineStore.Repositories
 
             return await query
                 .OrderBy(p => p.NameEn)
+                .ToListAsync(cancellationToken);
+        }
+
+   
+        public async Task<List<Product>> GetByIdsAsync(
+            List<int> ids,
+            CancellationToken cancellationToken = default)
+        {
+            if (ids == null || ids.Count == 0)
+            {
+                return new List<Product>();
+            }
+
+            var dbSet = await GetDbSetAsync();
+
+            return await dbSet
+                .Include(p => p.Category)
+                .Where(p => ids.Contains(p.Id))
                 .ToListAsync(cancellationToken);
         }
     }

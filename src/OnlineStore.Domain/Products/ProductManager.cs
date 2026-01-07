@@ -111,6 +111,11 @@ namespace OnlineStore.Products
         /// </summary>
         public async Task PublishAsync(Product product)
         {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
             // Business Rule: Product must be active to be published
             if (!product.IsActive)
             {
@@ -134,6 +139,11 @@ namespace OnlineStore.Products
         /// </summary>
         public void Unpublish(Product product)
         {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
             product.Unpublish();
         }
 
@@ -142,6 +152,11 @@ namespace OnlineStore.Products
         /// </summary>
         public void Activate(Product product)
         {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
             product.Activate();
         }
 
@@ -150,6 +165,11 @@ namespace OnlineStore.Products
         /// </summary>
         public void Deactivate(Product product)
         {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
             product.Deactivate();
         }
 
@@ -158,6 +178,11 @@ namespace OnlineStore.Products
         /// </summary>
         public void UpdateStock(Product product, int quantity)
         {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
             ValidateStock(quantity);
             product.SetStock(quantity);
         }
@@ -167,6 +192,11 @@ namespace OnlineStore.Products
         /// </summary>
         public void AdjustStock(Product product, int quantityChange)
         {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
             product.UpdateStock(quantityChange);
         }
 
@@ -175,6 +205,11 @@ namespace OnlineStore.Products
         /// </summary>
         public void UpdatePrice(Product product, decimal newPrice)
         {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
             ValidatePrice(newPrice);
             product.SetPrice(newPrice);
         }
@@ -184,6 +219,11 @@ namespace OnlineStore.Products
         /// </summary>
         public bool HasSufficientStock(Product product, int requestedQuantity)
         {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
             return product.HasSufficientStock(requestedQuantity);
         }
 
@@ -192,6 +232,11 @@ namespace OnlineStore.Products
         /// </summary>
         public void ReserveStock(Product product, int quantity)
         {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
             if (!product.HasSufficientStock(quantity))
             {
                 throw new BusinessException("OnlineStore:005")
@@ -210,6 +255,11 @@ namespace OnlineStore.Products
         /// </summary>
         public void ReleaseStock(Product product, int quantity)
         {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
             ValidateStock(quantity);
             product.UpdateStock(quantity);
         }
@@ -227,7 +277,7 @@ namespace OnlineStore.Products
 
             if (!isUnique)
             {
-                throw new BusinessException("OnlineStore:003")
+                throw new BusinessException("OnlineStore:010")
                     .WithData("SKU", sku)
                     .WithData("Message", $"Product with SKU '{sku}' already exists.");
             }
@@ -255,7 +305,7 @@ namespace OnlineStore.Products
         {
             if (price < 0)
             {
-                throw new BusinessException("OnlineStore:008")
+                throw new BusinessException("OnlineStore:003")
                     .WithData("Price", price)
                     .WithData("Message", "Price cannot be negative.");
             }
@@ -268,7 +318,7 @@ namespace OnlineStore.Products
         {
             if (quantity < 0)
             {
-                throw new BusinessException("OnlineStore:009")
+                throw new BusinessException("OnlineStore:004")
                     .WithData("Quantity", quantity)
                     .WithData("Message", "Stock quantity cannot be negative.");
             }

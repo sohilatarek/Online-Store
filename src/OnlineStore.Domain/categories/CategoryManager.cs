@@ -61,6 +61,11 @@ namespace OnlineStore.Categories
             string descriptionEn,
             int displayOrder)
         {
+            if (category == null)
+            {
+                throw new ArgumentNullException(nameof(category));
+            }
+
             // Business Rule: New name must be unique (excluding current category)
             if (category.NameEn != nameEn)
             {
@@ -79,6 +84,11 @@ namespace OnlineStore.Categories
         /// </summary>
         public async Task DeleteAsync(Category category)
         {
+            if (category == null)
+            {
+                throw new ArgumentNullException(nameof(category));
+            }
+
             // Business Rule: Cannot delete category if it has active products
             var hasProducts = await _categoryRepository.HasProductsAsync(category.Id);
 
@@ -106,6 +116,11 @@ namespace OnlineStore.Categories
         /// </summary>
         public void ChangeDisplayOrder(Category category, int newOrder)
         {
+            if (category == null)
+            {
+                throw new ArgumentNullException(nameof(category));
+            }
+
             ValidateDisplayOrder(newOrder);
             category.SetDisplayOrder(newOrder);
         }
@@ -115,6 +130,11 @@ namespace OnlineStore.Categories
         /// </summary>
         public void Activate(Category category)
         {
+            if (category == null)
+            {
+                throw new ArgumentNullException(nameof(category));
+            }
+
             category.Activate();
         }
 
@@ -123,6 +143,11 @@ namespace OnlineStore.Categories
         /// </summary>
         public void Deactivate(Category category)
         {
+            if (category == null)
+            {
+                throw new ArgumentNullException(nameof(category));
+            }
+
             category.Deactivate();
         }
 
