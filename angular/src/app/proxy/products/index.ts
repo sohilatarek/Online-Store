@@ -1,2 +1,4 @@
+export * from './cached-product.service';
 export * from './models';
-export * from './products.service';
+
+export { CachedProductService as ProductsService } from './cached-product.service';

@@ -1,96 +1,284 @@
-<div class="card pt-3">
-  <form class="card-body">
-    <div class="row">
-      <div class="form-group col-md-6">
-        <label for="filter">Name Or Description:</label>
-        <input type="text" class="form-control" id="filter" formControlName="filter" />
-      </div>
+<div class="products-list-container">
+  <div class="card">
+    <div class="card-header">
+      <h5 class="card-title">
+        <i class="fa fa-box me-2"></i>Products Management
+      </h5>
     </div>
-    <div class="row">
-      <div class="form-group col-md-6">
-        <div class="form-group col-md-6">
-          <label class="form-control-label" for="categoryId">Category:</label>
-          <select class="form-control" formControlName="categoryId">
-            @for(category of categories; track $index){
-            <option [value]="category.id">{{ category.nameEn }}</option>
-            }
-          </select>
+    <div class="card-body">
+      <!-- Search and Filter Form -->
+      <form [formGroup]="searchForm" (ngSubmit)="search()" class="search-filters">
+        <div class="filter-row">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa fa-search me-1"></i>Search
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              formControlName="searchTerm" 
+              placeholder="Name, SKU, or Description"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa fa-folder me-1"></i>Category
+            </label>
+            <select class="form-select" formControlName="categoryId">
+              <option [value]="null">All Categories</option>
+              @for(category of categories; track category.id) {
+                <option [value]="category.id">{{ category.nameEn || category.nameAr }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa fa-toggle-on me-1"></i>Status
+            </label>
+            <select class="form-select" formControlName="isActive">
+              <option [value]="null">All</option>
+              <option [value]="true">Active</option>
+              <option [value]="false">Inactive</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa fa-eye me-1"></i>Published
+            </label>
+            <select class="form-select" formControlName="isPublished">
+              <option [value]="null">All</option>
+              <option [value]="true">Published</option>
+              <option [value]="false">Unpublished</option>
+            </select>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="row pt-3">
-      <div class="text-right">
-        <button class="btn btn-primary" (click)="searchProducts()">Search</button>
-        <!-- <button class="btn btn-secondary m-2" (click)="addProduct()">Add Product</button> -->
-        <!-- <button *abpPermission="'Demo1.Products.CreateEdit'" class="btn btn-secondary m-2" (click)="addProduct()">Add Product</button> -->
-        <button *ngIf="canCreate" class="btn btn-secondary m-2" (click)="addProduct()">
-          Add Product
-        </button>
-      </div>
-    </div>
-  </form>
-</div>
+        <div class="filter-row">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa fa-dollar-sign me-1"></i>Min Price
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              formControlName="minPrice" 
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa fa-dollar-sign me-1"></i>Max Price
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              formControlName="maxPrice" 
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa fa-exclamation-triangle me-1"></i>Stock Status
+            </label>
+            <select class="form-select" formControlName="isOutOfStock">
+              <option [value]="null">All</option>
+              <option [value]="true">Out of Stock</option>
+              <option [value]="false">In Stock</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa fa-battery-quarter me-1"></i>Low Stock
+            </label>
+            <select class="form-select" formControlName="isLowStock">
+              <option [value]="null">All</option>
+              <option [value]="true">Low Stock Only</option>
+            </select>
+          </div>
+        </div>
+        <div class="filter-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
+            <i class="fa fa-search me-2"></i>Search
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="resetFilters()" [disabled]="loading">
+            <i class="fa fa-refresh me-2"></i>Reset
+          </button>
+          @if(canCreate) {
+            <button type="button" class="btn btn-success" (click)="addProduct()">
+              <i class="fa fa-plus me-2"></i>Add Product
+            </button>
+          }
+        </div>
+      </form>
 
-<!-- <table class="table" id="tblGrid">
-    <caption>
-    </caption>
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Name Arabic</th>
-            <th>Name English</th>
-            <th>Description Arabic</th>
-            <th>Description English</th>
-            <th>Category Name</th>
-        </tr>
-    </thead>
-    <tbody>
-        @for(product of products; track $index){
-        <tr>
-            <td>{{ $index + 1 }}</td>
-            <td>{{ product.nameAr }}</td>
-            <td>{{ product.nameEn }}</td>
-            <td>{{ product.descriptionAr }}</td>
-            <td>{{ product.descriptionEn }}</td>
-            <td>{{ product.categoryNameAr }}</td>
-        </tr>
+      <!-- Loading Indicator -->
+      @if(loading) {
+        <div class="loading-container">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="loading-text">Loading products...</p>
+        </div>
+      }
+
+      <!-- Products Table -->
+      @if(!loading && products.length > 0) {
+        <div class="products-table-wrapper">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="cursor: pointer" (click)="onSort('nameEn')">
+                    Product Name {{ getSortIcon('nameEn') }}
+                  </th>
+                  <th style="cursor: pointer" (click)="onSort('sku')">
+                    SKU {{ getSortIcon('sku') }}
+                  </th>
+                  <th>Category</th>
+                  <th style="cursor: pointer" (click)="onSort('price')">
+                    Price {{ getSortIcon('price') }}
+                  </th>
+                  <th style="cursor: pointer" (click)="onSort('stockQuantity')">
+                    Stock {{ getSortIcon('stockQuantity') }}
+                  </th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for(product of products; track product.id) {
+                  <tr>
+                    <td>
+                      <div class="product-name">
+                        {{ product.nameEn || product.nameAr }}
+                        @if(product.nameAr && product.nameEn) {
+                          <div class="product-name-ar">{{ product.nameAr }}</div>
+                        }
+                      </div>
+                    </td>
+                    <td>
+                      <code class="sku-code">{{ product.sku }}</code>
+                    </td>
+                    <td>{{ product.categoryNameEn || product.categoryNameAr }}</td>
+                    <td>
+                      <span class="price-display">{{ formatPrice(product.price) }}</span>
+                    </td>
+                    <td>
+                      <span [class]="'stock-badge ' + getStockStatusClass(product)">
+                        <i class="fa fa-{{ product.isOutOfStock ? 'times-circle' : product.isLowStock ? 'exclamation-circle' : 'check-circle' }}"></i>
+                        {{ product.stockQuantity }} - {{ getStockStatusText(product) }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="status-badges">
+                        <span [class]="'badge ' + (product.isActive ? 'badge-success' : 'badge-secondary')">
+                          {{ product.isActive ? 'Active' : 'Inactive' }}
+                        </span>
+                        @if(product.isPublished) {
+                          <span class="badge badge-info">Published</span>
+                        }
+                      </div>
+                    </td>
+                    <td>
+                      <div class="action-buttons">
+                        @if(canEdit) {
+                          <button 
+                            class="btn btn-outline-primary btn-sm" 
+                            (click)="editProduct(product.id)"
+                            title="Edit Product"
+                          >
+                            <i class="fa fa-edit"></i>
+                          </button>
+                        }
+                        @if(canPublish) {
+                          <button 
+                            class="btn btn-outline-info btn-sm" 
+                            (click)="publishProduct(product)"
+                            [title]="product.isPublished ? 'Unpublish' : 'Publish'"
+                          >
+                            <i [class]="product.isPublished ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                          </button>
+                        }
+                        @if(canManageStock) {
+                          <button 
+                            class="btn btn-outline-warning btn-sm" 
+                            (click)="manageStock(product)"
+                            title="Manage Stock"
+                          >
+                            <i class="fa fa-warehouse"></i>
+                          </button>
+                        }
+                        @if(canDelete) {
+                          <button 
+                            class="btn btn-outline-danger btn-sm" 
+                            (click)="deleteProduct(product)"
+                            title="Delete Product"
+                          >
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        @if(getTotalPages() > 1) {
+          <div class="pagination-wrapper">
+            <nav aria-label="Products pagination">
+              <ul class="pagination">
+                <li class="page-item" [class.disabled]="page === 1">
+                  <a class="page-link" (click)="onPageChange(page - 1)" style="cursor: pointer">
+                    <i class="fa fa-chevron-left"></i>
+                  </a>
+                </li>
+                @for(pageNum of getPageNumbers(); track pageNum) {
+                  <li class="page-item" [class.active]="page === pageNum">
+                    <a class="page-link" (click)="onPageChange(pageNum)" style="cursor: pointer">{{ pageNum }}</a>
+                  </li>
+                }
+                <li class="page-item" [class.disabled]="page === getTotalPages()">
+                  <a class="page-link" (click)="onPageChange(page + 1)" style="cursor: pointer">
+                    <i class="fa fa-chevron-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+            <div class="pagination-info">
+              Showing {{ getDisplayRange() }} of {{ totalCount }} products
+            </div>
+          </div>
         }
-    </tbody>
-</table> -->
+      }
 
-<!-- <ngx-datatable
-  class="material"
-  [rows]="(products$ | async)?.items || []"
-  [count]="(products$ | async)?.totalCount || 0"
-  [columnMode]="'force'"
-  [headerHeight]="50"
-  [footerHeight]="50"
-  [rowHeight]="50"
-  [footerHeight]="50"
-  [limit]="5"
->
-  <ngx-datatable-column name="Name Arabic" prop="nameAr">
-    <ng-template let-row="row" ngx-datatable-cell-template> {{ row.nameAr }} </ng-template>
-  </ngx-datatable-column>
-
-  <ngx-datatable-column name="Name English" prop="nameEn">
-    <ng-template let-row="row" ngx-datatable-cell-template> {{row.nameEn}} </ng-template>
-  </ngx-datatable-column>
-
-  <ngx-datatable-column name="Description Arabic" prop="descriptionAr">
-    <ng-template let-row="row" ngx-datatable-cell-template> {{ row.descriptionAr }} </ng-template>
-  </ngx-datatable-column>
-
-  <ngx-datatable-column name="Description English" prop="descriptionEn">
-    <ng-template let-row="row" ngx-datatable-cell-template> {{row.descriptionEn}} </ng-template>
-  </ngx-datatable-column>
-
-  <ngx-datatable-column name="Category Arabic" prop="categoryNameAr">
-    <ng-template let-row="row" ngx-datatable-cell-template> {{row.categoryNameAr}} </ng-template>
-  </ngx-datatable-column>
-
-  <ngx-datatable-column name="Category English" prop="categoryNameEn">
-    <ng-template let-row="row" ngx-datatable-cell-template> {{row.categoryNameEn}} </ng-template>
-  </ngx-datatable-column>
-</ngx-datatable>
- -->
+      <!-- Empty State -->
+      @if(!loading && products.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fa fa-box-open"></i>
+          </div>
+          <h3 class="empty-title">No Products Found</h3>
+          <p class="empty-message">
+            @if(canCreate) {
+              Get started by creating your first product.
+            } @else {
+              No products match your search criteria. Try adjusting your filters.
+            }
+          </p>
+          @if(canCreate) {
+            <button class="btn btn-primary" (click)="addProduct()">
+              <i class="fa fa-plus me-2"></i>Create Your First Product
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

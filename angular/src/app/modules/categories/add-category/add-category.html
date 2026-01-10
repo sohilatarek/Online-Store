@@ -1,0 +1,160 @@
+<div class="category-form-container">
+  <div class="card">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="card-title">
+          <i class="fa fa-{{ isEditMode ? 'edit' : 'plus-circle' }} me-2"></i>
+          {{ isEditMode ? 'Edit Category' : 'Create New Category' }}
+        </h5>
+        <button class="btn btn-outline-secondary btn-sm" (click)="cancel()" [disabled]="saving">
+          <i class="fa fa-times me-1"></i> Cancel
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      @if(loading) {
+        <div class="loading-container">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted mt-3">Loading category details...</p>
+        </div>
+      } @else {
+        <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="category-form">
+          <div class="form-grid">
+            <!-- Arabic Name -->
+            <div class="form-group">
+              <label class="form-label">
+                Arabic Name <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('nameAr')"
+                formControlName="nameAr"
+                placeholder="Enter Arabic name"
+              />
+              @if(isFieldInvalid('nameAr')) {
+                <div class="invalid-feedback">{{ getFieldError('nameAr') }}</div>
+              }
+            </div>
+
+            <!-- English Name -->
+            <div class="form-group">
+              <label class="form-label">
+                English Name <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('nameEn')"
+                formControlName="nameEn"
+                placeholder="Enter English name"
+              />
+              @if(isFieldInvalid('nameEn')) {
+                <div class="invalid-feedback">{{ getFieldError('nameEn') }}</div>
+              }
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- Arabic Description -->
+            <div class="form-group">
+              <label class="form-label">
+                Arabic Description <span class="text-danger">*</span>
+              </label>
+              <textarea 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('descriptionAr')"
+                formControlName="descriptionAr"
+                rows="5"
+                placeholder="Enter Arabic description"
+              ></textarea>
+              @if(isFieldInvalid('descriptionAr')) {
+                <div class="invalid-feedback">{{ getFieldError('descriptionAr') }}</div>
+              }
+            </div>
+
+            <!-- English Description -->
+            <div class="form-group">
+              <label class="form-label">
+                English Description <span class="text-danger">*</span>
+              </label>
+              <textarea 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('descriptionEn')"
+                formControlName="descriptionEn"
+                rows="5"
+                placeholder="Enter English description"
+              ></textarea>
+              @if(isFieldInvalid('descriptionEn')) {
+                <div class="invalid-feedback">{{ getFieldError('descriptionEn') }}</div>
+              }
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- Display Order -->
+            <div class="form-group">
+              <label class="form-label">
+                Display Order <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="number" 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('displayOrder')"
+                formControlName="displayOrder"
+                min="0"
+                placeholder="0"
+              />
+              @if(isFieldInvalid('displayOrder')) {
+                <div class="invalid-feedback">{{ getFieldError('displayOrder') }}</div>
+              }
+              <small class="form-text">Lower numbers appear first in the list</small>
+            </div>
+
+            <!-- Is Active -->
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <div class="form-check form-switch">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  formControlName="isActive"
+                  id="isActive"
+                />
+                <label class="form-check-label" for="isActive">
+                  Active Category
+                </label>
+              </div>
+              <small class="form-text">Inactive categories cannot be used for new products</small>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="saving || categoryForm.invalid"
+            >
+              @if(saving) {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              } @else {
+                <i class="fa fa-{{ isEditMode ? 'save' : 'plus' }} me-2"></i>
+              }
+              {{ isEditMode ? 'Update Category' : 'Create Category' }}
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-secondary" 
+              (click)="cancel()"
+              [disabled]="saving"
+            >
+              <i class="fa fa-times me-2"></i>Cancel
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</div>

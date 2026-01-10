@@ -1,1 +1,257 @@
-<p>add-product works!</p>
+<div class="product-form-container">
+  <div class="card">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="card-title">
+          <i class="fa fa-{{ isEditMode ? 'edit' : 'plus-circle' }} me-2"></i>
+          {{ isEditMode ? 'Edit Product' : 'Create New Product' }}
+        </h5>
+        <button class="btn btn-outline-secondary btn-sm" (click)="cancel()" [disabled]="saving">
+          <i class="fa fa-times me-1"></i> Cancel
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      @if(loading) {
+        <div class="loading-container">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted mt-3">Loading product details...</p>
+        </div>
+      } @else {
+        <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
+          <div class="form-grid">
+            <!-- Arabic Name -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa fa-language me-1"></i>Arabic Name <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('nameAr')"
+                formControlName="nameAr"
+                placeholder="Enter Arabic name"
+              />
+              @if(isFieldInvalid('nameAr')) {
+                <div class="invalid-feedback">{{ getFieldError('nameAr') }}</div>
+              }
+            </div>
+
+            <!-- English Name -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa fa-language me-1"></i>English Name <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('nameEn')"
+                formControlName="nameEn"
+                placeholder="Enter English name"
+              />
+              @if(isFieldInvalid('nameEn')) {
+                <div class="invalid-feedback">{{ getFieldError('nameEn') }}</div>
+              }
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- Arabic Description -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa fa-align-right me-1"></i>Arabic Description <span class="text-danger">*</span>
+              </label>
+              <textarea 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('descriptionAr')"
+                formControlName="descriptionAr"
+                rows="5"
+                placeholder="Enter Arabic description"
+              ></textarea>
+              @if(isFieldInvalid('descriptionAr')) {
+                <div class="invalid-feedback">{{ getFieldError('descriptionAr') }}</div>
+              }
+            </div>
+
+            <!-- English Description -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa fa-align-left me-1"></i>English Description <span class="text-danger">*</span>
+              </label>
+              <textarea 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('descriptionEn')"
+                formControlName="descriptionEn"
+                rows="5"
+                placeholder="Enter English description"
+              ></textarea>
+              @if(isFieldInvalid('descriptionEn')) {
+                <div class="invalid-feedback">{{ getFieldError('descriptionEn') }}</div>
+              }
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- Category -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa fa-folder me-1"></i>Category <span class="text-danger">*</span>
+              </label>
+              <select 
+                class="form-select" 
+                [class.is-invalid]="isFieldInvalid('categoryId')"
+                formControlName="categoryId"
+              >
+                <option [value]="null">Select a category</option>
+                @for(category of activeCategories; track category.id) {
+                  <option [value]="category.id">
+                    {{ category.nameEn || category.nameAr }}
+                  </option>
+                }
+              </select>
+              @if(isFieldInvalid('categoryId')) {
+                <div class="invalid-feedback">{{ getFieldError('categoryId') }}</div>
+              }
+            </div>
+
+            <!-- SKU -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa fa-barcode me-1"></i>SKU (Stock Keeping Unit) <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('sku')"
+                formControlName="sku"
+                placeholder="e.g., FOOD-OIL-001"
+                style="text-transform: uppercase"
+              />
+              @if(isFieldInvalid('sku')) {
+                <div class="invalid-feedback">{{ getFieldError('sku') }}</div>
+              }
+              <small class="form-text">Uppercase letters, numbers, and hyphens only</small>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- Price -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa fa-dollar-sign me-1"></i>Price <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  [class.is-invalid]="isFieldInvalid('price')"
+                  formControlName="price"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                />
+              </div>
+              @if(isFieldInvalid('price')) {
+                <div class="invalid-feedback">{{ getFieldError('price') }}</div>
+              }
+            </div>
+
+            <!-- Stock Quantity -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa fa-warehouse me-1"></i>Stock Quantity <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="number" 
+                class="form-control" 
+                [class.is-invalid]="isFieldInvalid('stockQuantity')"
+                formControlName="stockQuantity"
+                min="0"
+                placeholder="0"
+              />
+              @if(isFieldInvalid('stockQuantity')) {
+                <div class="invalid-feedback">{{ getFieldError('stockQuantity') }}</div>
+              }
+            </div>
+
+            <!-- Inventory Value (Read-only) -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa fa-calculator me-1"></i>Inventory Value
+              </label>
+              <div class="inventory-value-display">
+                <div class="value-label">Total Inventory Value</div>
+                <div class="value-amount">
+                  ${{ (productForm.get('price')?.value || 0) * (productForm.get('stockQuantity')?.value || 0) | number:'1.2-2' }}
+                </div>
+              </div>
+              <small class="form-text">Price × Stock Quantity</small>
+            </div>
+          </div>
+
+          <div class="status-switches">
+            <!-- Is Active -->
+            <div class="switch-group">
+              <div class="form-check form-switch">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  formControlName="isActive"
+                  id="isActive"
+                  (change)="onIsActiveChange()"
+                />
+                <label class="form-check-label" for="isActive">
+                  <i class="fa fa-toggle-on me-2"></i>Active Product
+                </label>
+              </div>
+              <small class="form-text">Inactive products cannot be published</small>
+            </div>
+
+            <!-- Is Published -->
+            <div class="switch-group">
+              <div class="form-check form-switch">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  formControlName="isPublished"
+                  id="isPublished"
+                  [disabled]="!productForm.get('isActive')?.value"
+                />
+                <label class="form-check-label" for="isPublished">
+                  <i class="fa fa-eye me-2"></i>Published
+                </label>
+              </div>
+              <small class="form-text">Published products are visible to customers</small>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="saving || productForm.invalid"
+            >
+              @if(saving) {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              } @else {
+                <i class="fa fa-{{ isEditMode ? 'save' : 'plus' }} me-2"></i>
+              }
+              {{ isEditMode ? 'Update Product' : 'Create Product' }}
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-secondary" 
+              (click)="cancel()"
+              [disabled]="saving"
+            >
+              <i class="fa fa-times me-2"></i>Cancel
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</div>

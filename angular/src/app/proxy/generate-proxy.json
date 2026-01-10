@@ -873,18 +873,119 @@
       "rootPath": "app",
       "remoteServiceName": "Default",
       "controllers": {
-        "OnlineStore.Categories.CategoriesAppService": {
-          "controllerName": "Categories",
-          "controllerGroupName": "Categories",
+        "OnlineStore.Categories.CachedCategoryAppService": {
+          "controllerName": "CachedCategory",
+          "controllerGroupName": "CachedCategory",
           "isRemoteService": true,
           "isIntegrationService": false,
           "apiVersion": null,
-          "type": "OnlineStore.Categories.CategoriesAppService",
+          "type": "OnlineStore.Categories.CachedCategoryAppService",
           "interfaces": [
             {
               "type": "OnlineStore.Categories.ICategoriesAppService",
               "name": "ICategoriesAppService",
               "methods": [
+                {
+                  "name": "GetFilteredListAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "input",
+                      "typeAsString": "OnlineStore.Categories.GetCategoriesInput, OnlineStore.Application.Contracts",
+                      "type": "OnlineStore.Categories.GetCategoriesInput",
+                      "typeSimple": "OnlineStore.Categories.GetCategoriesInput",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "Volo.Abp.Application.Dtos.PagedResultDto<OnlineStore.Categories.CategoryDto>",
+                    "typeSimple": "Volo.Abp.Application.Dtos.PagedResultDto<OnlineStore.Categories.CategoryDto>"
+                  }
+                },
+                {
+                  "name": "GetActiveListAsync",
+                  "parametersOnMethod": [],
+                  "returnValue": {
+                    "type": "System.Collections.Generic.List<OnlineStore.Categories.CategoryDto>",
+                    "typeSimple": "[OnlineStore.Categories.CategoryDto]"
+                  }
+                },
+                {
+                  "name": "CanDeleteAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "System.Boolean",
+                    "typeSimple": "boolean"
+                  }
+                },
+                {
+                  "name": "ChangeDisplayOrderAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    },
+                    {
+                      "name": "newOrder",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "OnlineStore.Categories.CategoryDto",
+                    "typeSimple": "OnlineStore.Categories.CategoryDto"
+                  }
+                },
+                {
+                  "name": "ActivateAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "OnlineStore.Categories.CategoryDto",
+                    "typeSimple": "OnlineStore.Categories.CategoryDto"
+                  }
+                },
+                {
+                  "name": "DeactivateAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "OnlineStore.Categories.CategoryDto",
+                    "typeSimple": "OnlineStore.Categories.CategoryDto"
+                  }
+                },
                 {
                   "name": "GetAsync",
                   "parametersOnMethod": [
@@ -982,179 +1083,11 @@
             }
           ],
           "actions": {
-            "CreateAsyncByInput": {
-              "uniqueName": "CreateAsyncByInput",
-              "name": "CreateAsync",
-              "httpMethod": "POST",
-              "url": "api/app/categories",
-              "supportedVersions": [],
-              "parametersOnMethod": [
-                {
-                  "name": "input",
-                  "typeAsString": "OnlineStore.Categories.CreateUpdateCategoryDto, OnlineStore.Application.Contracts",
-                  "type": "OnlineStore.Categories.CreateUpdateCategoryDto",
-                  "typeSimple": "OnlineStore.Categories.CreateUpdateCategoryDto",
-                  "isOptional": false,
-                  "defaultValue": null
-                }
-              ],
-              "parameters": [
-                {
-                  "nameOnMethod": "input",
-                  "name": "input",
-                  "jsonName": null,
-                  "type": "OnlineStore.Categories.CreateUpdateCategoryDto",
-                  "typeSimple": "OnlineStore.Categories.CreateUpdateCategoryDto",
-                  "isOptional": false,
-                  "defaultValue": null,
-                  "constraintTypes": null,
-                  "bindingSourceId": "Body",
-                  "descriptorName": ""
-                }
-              ],
-              "returnValue": {
-                "type": "OnlineStore.Categories.CategoryDto",
-                "typeSimple": "OnlineStore.Categories.CategoryDto"
-              },
-              "allowAnonymous": null,
-              "implementFrom": "Volo.Abp.Application.Services.ICreateAppService<OnlineStore.Categories.CategoryDto,OnlineStore.Categories.CreateUpdateCategoryDto>"
-            },
-            "UpdateAsyncByIdAndInput": {
-              "uniqueName": "UpdateAsyncByIdAndInput",
-              "name": "UpdateAsync",
-              "httpMethod": "PUT",
-              "url": "api/app/categories/{id}",
-              "supportedVersions": [],
-              "parametersOnMethod": [
-                {
-                  "name": "id",
-                  "typeAsString": "System.Int32, System.Private.CoreLib",
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null
-                },
-                {
-                  "name": "input",
-                  "typeAsString": "OnlineStore.Categories.CreateUpdateCategoryDto, OnlineStore.Application.Contracts",
-                  "type": "OnlineStore.Categories.CreateUpdateCategoryDto",
-                  "typeSimple": "OnlineStore.Categories.CreateUpdateCategoryDto",
-                  "isOptional": false,
-                  "defaultValue": null
-                }
-              ],
-              "parameters": [
-                {
-                  "nameOnMethod": "id",
-                  "name": "id",
-                  "jsonName": null,
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null,
-                  "constraintTypes": [],
-                  "bindingSourceId": "Path",
-                  "descriptorName": ""
-                },
-                {
-                  "nameOnMethod": "input",
-                  "name": "input",
-                  "jsonName": null,
-                  "type": "OnlineStore.Categories.CreateUpdateCategoryDto",
-                  "typeSimple": "OnlineStore.Categories.CreateUpdateCategoryDto",
-                  "isOptional": false,
-                  "defaultValue": null,
-                  "constraintTypes": null,
-                  "bindingSourceId": "Body",
-                  "descriptorName": ""
-                }
-              ],
-              "returnValue": {
-                "type": "OnlineStore.Categories.CategoryDto",
-                "typeSimple": "OnlineStore.Categories.CategoryDto"
-              },
-              "allowAnonymous": null,
-              "implementFrom": "Volo.Abp.Application.Services.IUpdateAppService<OnlineStore.Categories.CategoryDto,System.Int32,OnlineStore.Categories.CreateUpdateCategoryDto>"
-            },
-            "DeleteAsyncById": {
-              "uniqueName": "DeleteAsyncById",
-              "name": "DeleteAsync",
-              "httpMethod": "DELETE",
-              "url": "api/app/categories/{id}",
-              "supportedVersions": [],
-              "parametersOnMethod": [
-                {
-                  "name": "id",
-                  "typeAsString": "System.Int32, System.Private.CoreLib",
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null
-                }
-              ],
-              "parameters": [
-                {
-                  "nameOnMethod": "id",
-                  "name": "id",
-                  "jsonName": null,
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null,
-                  "constraintTypes": [],
-                  "bindingSourceId": "Path",
-                  "descriptorName": ""
-                }
-              ],
-              "returnValue": {
-                "type": "System.Void",
-                "typeSimple": "System.Void"
-              },
-              "allowAnonymous": null,
-              "implementFrom": "Volo.Abp.Application.Services.IDeleteAppService<System.Int32>"
-            },
-            "GetAsyncById": {
-              "uniqueName": "GetAsyncById",
-              "name": "GetAsync",
-              "httpMethod": "GET",
-              "url": "api/app/categories/{id}",
-              "supportedVersions": [],
-              "parametersOnMethod": [
-                {
-                  "name": "id",
-                  "typeAsString": "System.Int32, System.Private.CoreLib",
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null
-                }
-              ],
-              "parameters": [
-                {
-                  "nameOnMethod": "id",
-                  "name": "id",
-                  "jsonName": null,
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null,
-                  "constraintTypes": [],
-                  "bindingSourceId": "Path",
-                  "descriptorName": ""
-                }
-              ],
-              "returnValue": {
-                "type": "OnlineStore.Categories.CategoryDto",
-                "typeSimple": "OnlineStore.Categories.CategoryDto"
-              },
-              "allowAnonymous": null,
-              "implementFrom": "Volo.Abp.Application.Services.IReadOnlyAppService<OnlineStore.Categories.CategoryDto,OnlineStore.Categories.CategoryDto,System.Int32,Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto>"
-            },
             "GetListAsyncByInput": {
               "uniqueName": "GetListAsyncByInput",
               "name": "GetListAsync",
               "httpMethod": "GET",
-              "url": "api/app/categories",
+              "url": "api/app/cached-category",
               "supportedVersions": [],
               "parametersOnMethod": [
                 {
@@ -1208,23 +1141,644 @@
                 "type": "Volo.Abp.Application.Dtos.PagedResultDto<OnlineStore.Categories.CategoryDto>",
                 "typeSimple": "Volo.Abp.Application.Dtos.PagedResultDto<OnlineStore.Categories.CategoryDto>"
               },
-              "allowAnonymous": null,
+              "allowAnonymous": false,
               "implementFrom": "Volo.Abp.Application.Services.IReadOnlyAppService<OnlineStore.Categories.CategoryDto,OnlineStore.Categories.CategoryDto,System.Int32,Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto>"
+            },
+            "GetAsyncById": {
+              "uniqueName": "GetAsyncById",
+              "name": "GetAsync",
+              "httpMethod": "GET",
+              "url": "api/app/cached-category/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Categories.CategoryDto",
+                "typeSimple": "OnlineStore.Categories.CategoryDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Volo.Abp.Application.Services.IReadOnlyAppService<OnlineStore.Categories.CategoryDto,OnlineStore.Categories.CategoryDto,System.Int32,Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto>"
+            },
+            "CreateAsyncByInput": {
+              "uniqueName": "CreateAsyncByInput",
+              "name": "CreateAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-category",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "OnlineStore.Categories.CreateUpdateCategoryDto, OnlineStore.Application.Contracts",
+                  "type": "OnlineStore.Categories.CreateUpdateCategoryDto",
+                  "typeSimple": "OnlineStore.Categories.CreateUpdateCategoryDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "OnlineStore.Categories.CreateUpdateCategoryDto",
+                  "typeSimple": "OnlineStore.Categories.CreateUpdateCategoryDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Categories.CategoryDto",
+                "typeSimple": "OnlineStore.Categories.CategoryDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Volo.Abp.Application.Services.ICreateAppService<OnlineStore.Categories.CategoryDto,OnlineStore.Categories.CreateUpdateCategoryDto>"
+            },
+            "UpdateAsyncByIdAndInput": {
+              "uniqueName": "UpdateAsyncByIdAndInput",
+              "name": "UpdateAsync",
+              "httpMethod": "PUT",
+              "url": "api/app/cached-category/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "input",
+                  "typeAsString": "OnlineStore.Categories.CreateUpdateCategoryDto, OnlineStore.Application.Contracts",
+                  "type": "OnlineStore.Categories.CreateUpdateCategoryDto",
+                  "typeSimple": "OnlineStore.Categories.CreateUpdateCategoryDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "OnlineStore.Categories.CreateUpdateCategoryDto",
+                  "typeSimple": "OnlineStore.Categories.CreateUpdateCategoryDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Categories.CategoryDto",
+                "typeSimple": "OnlineStore.Categories.CategoryDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Volo.Abp.Application.Services.IUpdateAppService<OnlineStore.Categories.CategoryDto,System.Int32,OnlineStore.Categories.CreateUpdateCategoryDto>"
+            },
+            "DeleteAsyncById": {
+              "uniqueName": "DeleteAsyncById",
+              "name": "DeleteAsync",
+              "httpMethod": "DELETE",
+              "url": "api/app/cached-category/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Void",
+                "typeSimple": "System.Void"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Volo.Abp.Application.Services.IDeleteAppService<System.Int32>"
+            },
+            "GetFilteredListAsyncByInput": {
+              "uniqueName": "GetFilteredListAsyncByInput",
+              "name": "GetFilteredListAsync",
+              "httpMethod": "GET",
+              "url": "api/app/cached-category/filtered-list",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "OnlineStore.Categories.GetCategoriesInput, OnlineStore.Application.Contracts",
+                  "type": "OnlineStore.Categories.GetCategoriesInput",
+                  "typeSimple": "OnlineStore.Categories.GetCategoriesInput",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "IsActive",
+                  "jsonName": null,
+                  "type": "System.Boolean?",
+                  "typeSimple": "boolean?",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "SearchTerm",
+                  "jsonName": null,
+                  "type": "System.String",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "Sorting",
+                  "jsonName": null,
+                  "type": "System.String",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "SkipCount",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "MaxResultCount",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": "input"
+                }
+              ],
+              "returnValue": {
+                "type": "Volo.Abp.Application.Dtos.PagedResultDto<OnlineStore.Categories.CategoryDto>",
+                "typeSimple": "Volo.Abp.Application.Dtos.PagedResultDto<OnlineStore.Categories.CategoryDto>"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Categories.ICategoriesAppService"
+            },
+            "GetActiveListAsync": {
+              "uniqueName": "GetActiveListAsync",
+              "name": "GetActiveListAsync",
+              "httpMethod": "GET",
+              "url": "api/app/cached-category/active-list",
+              "supportedVersions": [],
+              "parametersOnMethod": [],
+              "parameters": [],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<OnlineStore.Categories.CategoryDto>",
+                "typeSimple": "[OnlineStore.Categories.CategoryDto]"
+              },
+              "allowAnonymous": true,
+              "implementFrom": "OnlineStore.Categories.ICategoriesAppService"
+            },
+            "CanDeleteAsyncById": {
+              "uniqueName": "CanDeleteAsyncById",
+              "name": "CanDeleteAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-category/{id}/can-delete",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Boolean",
+                "typeSimple": "boolean"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Categories.ICategoriesAppService"
+            },
+            "ChangeDisplayOrderAsyncByIdAndNewOrder": {
+              "uniqueName": "ChangeDisplayOrderAsyncByIdAndNewOrder",
+              "name": "ChangeDisplayOrderAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-category/{id}/change-display-order",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "newOrder",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "newOrder",
+                  "name": "newOrder",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Categories.CategoryDto",
+                "typeSimple": "OnlineStore.Categories.CategoryDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Categories.ICategoriesAppService"
+            },
+            "ActivateAsyncById": {
+              "uniqueName": "ActivateAsyncById",
+              "name": "ActivateAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-category/{id}/activate",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Categories.CategoryDto",
+                "typeSimple": "OnlineStore.Categories.CategoryDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Categories.ICategoriesAppService"
+            },
+            "DeactivateAsyncById": {
+              "uniqueName": "DeactivateAsyncById",
+              "name": "DeactivateAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-category/{id}/deactivate",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Categories.CategoryDto",
+                "typeSimple": "OnlineStore.Categories.CategoryDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Categories.ICategoriesAppService"
             }
           }
         },
-        "OnlineStore.Products.ProductsAppService": {
-          "controllerName": "Products",
-          "controllerGroupName": "Products",
+        "OnlineStore.Products.CachedProductAppService": {
+          "controllerName": "CachedProduct",
+          "controllerGroupName": "CachedProduct",
           "isRemoteService": true,
           "isIntegrationService": false,
           "apiVersion": null,
-          "type": "OnlineStore.Products.ProductsAppService",
+          "type": "OnlineStore.Products.CachedProductAppService",
           "interfaces": [
             {
               "type": "OnlineStore.Products.IProductsAppService",
               "name": "IProductsAppService",
               "methods": [
+                {
+                  "name": "GetByCategoryAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "categoryId",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    },
+                    {
+                      "name": "onlyPublished",
+                      "typeAsString": "System.Boolean, System.Private.CoreLib",
+                      "type": "System.Boolean",
+                      "typeSimple": "boolean",
+                      "isOptional": true,
+                      "defaultValue": false
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "System.Collections.Generic.List<OnlineStore.Products.ProductDto>",
+                    "typeSimple": "[OnlineStore.Products.ProductDto]"
+                  }
+                },
+                {
+                  "name": "GetPublishedProductsAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "categoryId",
+                      "typeAsString": "System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib",
+                      "type": "System.Int32?",
+                      "typeSimple": "number?",
+                      "isOptional": true,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "System.Collections.Generic.List<OnlineStore.Products.ProductDto>",
+                    "typeSimple": "[OnlineStore.Products.ProductDto]"
+                  }
+                },
+                {
+                  "name": "PublishAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "OnlineStore.Products.ProductDto",
+                    "typeSimple": "OnlineStore.Products.ProductDto"
+                  }
+                },
+                {
+                  "name": "UnpublishAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "OnlineStore.Products.ProductDto",
+                    "typeSimple": "OnlineStore.Products.ProductDto"
+                  }
+                },
+                {
+                  "name": "UpdateStockAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    },
+                    {
+                      "name": "input",
+                      "typeAsString": "OnlineStore.Products.UpdateStockDto, OnlineStore.Application.Contracts",
+                      "type": "OnlineStore.Products.UpdateStockDto",
+                      "typeSimple": "OnlineStore.Products.UpdateStockDto",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "OnlineStore.Products.ProductDto",
+                    "typeSimple": "OnlineStore.Products.ProductDto"
+                  }
+                },
+                {
+                  "name": "AdjustStockAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    },
+                    {
+                      "name": "input",
+                      "typeAsString": "OnlineStore.Products.AdjustStockDto, OnlineStore.Application.Contracts",
+                      "type": "OnlineStore.Products.AdjustStockDto",
+                      "typeSimple": "OnlineStore.Products.AdjustStockDto",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "OnlineStore.Products.ProductDto",
+                    "typeSimple": "OnlineStore.Products.ProductDto"
+                  }
+                },
+                {
+                  "name": "BulkUpdateStockAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "input",
+                      "typeAsString": "OnlineStore.Products.BulkUpdateStockDto, OnlineStore.Application.Contracts",
+                      "type": "OnlineStore.Products.BulkUpdateStockDto",
+                      "typeSimple": "OnlineStore.Products.BulkUpdateStockDto",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "System.Void",
+                    "typeSimple": "System.Void"
+                  }
+                },
+                {
+                  "name": "CheckStockAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "input",
+                      "typeAsString": "OnlineStore.Products.CheckStockInput, OnlineStore.Application.Contracts",
+                      "type": "OnlineStore.Products.CheckStockInput",
+                      "typeSimple": "OnlineStore.Products.CheckStockInput",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "OnlineStore.Products.StockCheckResultDto",
+                    "typeSimple": "OnlineStore.Products.StockCheckResultDto"
+                  }
+                },
+                {
+                  "name": "GetLowStockAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "threshold",
+                      "typeAsString": "System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib",
+                      "type": "System.Int32?",
+                      "typeSimple": "number?",
+                      "isOptional": true,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "System.Collections.Generic.List<OnlineStore.Products.ProductDto>",
+                    "typeSimple": "[OnlineStore.Products.ProductDto]"
+                  }
+                },
+                {
+                  "name": "GetOutOfStockAsync",
+                  "parametersOnMethod": [],
+                  "returnValue": {
+                    "type": "System.Collections.Generic.List<OnlineStore.Products.ProductDto>",
+                    "typeSimple": "[OnlineStore.Products.ProductDto]"
+                  }
+                },
                 {
                   "name": "GetAsync",
                   "parametersOnMethod": [
@@ -1322,179 +1876,11 @@
             }
           ],
           "actions": {
-            "CreateAsyncByInput": {
-              "uniqueName": "CreateAsyncByInput",
-              "name": "CreateAsync",
-              "httpMethod": "POST",
-              "url": "api/app/products",
-              "supportedVersions": [],
-              "parametersOnMethod": [
-                {
-                  "name": "input",
-                  "typeAsString": "OnlineStore.Products.CreateUpdateProductDto, OnlineStore.Application.Contracts",
-                  "type": "OnlineStore.Products.CreateUpdateProductDto",
-                  "typeSimple": "OnlineStore.Products.CreateUpdateProductDto",
-                  "isOptional": false,
-                  "defaultValue": null
-                }
-              ],
-              "parameters": [
-                {
-                  "nameOnMethod": "input",
-                  "name": "input",
-                  "jsonName": null,
-                  "type": "OnlineStore.Products.CreateUpdateProductDto",
-                  "typeSimple": "OnlineStore.Products.CreateUpdateProductDto",
-                  "isOptional": false,
-                  "defaultValue": null,
-                  "constraintTypes": null,
-                  "bindingSourceId": "Body",
-                  "descriptorName": ""
-                }
-              ],
-              "returnValue": {
-                "type": "OnlineStore.Products.ProductDto",
-                "typeSimple": "OnlineStore.Products.ProductDto"
-              },
-              "allowAnonymous": null,
-              "implementFrom": "Volo.Abp.Application.Services.ICreateAppService<OnlineStore.Products.ProductDto,OnlineStore.Products.CreateUpdateProductDto>"
-            },
-            "UpdateAsyncByIdAndInput": {
-              "uniqueName": "UpdateAsyncByIdAndInput",
-              "name": "UpdateAsync",
-              "httpMethod": "PUT",
-              "url": "api/app/products/{id}",
-              "supportedVersions": [],
-              "parametersOnMethod": [
-                {
-                  "name": "id",
-                  "typeAsString": "System.Int32, System.Private.CoreLib",
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null
-                },
-                {
-                  "name": "input",
-                  "typeAsString": "OnlineStore.Products.CreateUpdateProductDto, OnlineStore.Application.Contracts",
-                  "type": "OnlineStore.Products.CreateUpdateProductDto",
-                  "typeSimple": "OnlineStore.Products.CreateUpdateProductDto",
-                  "isOptional": false,
-                  "defaultValue": null
-                }
-              ],
-              "parameters": [
-                {
-                  "nameOnMethod": "id",
-                  "name": "id",
-                  "jsonName": null,
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null,
-                  "constraintTypes": [],
-                  "bindingSourceId": "Path",
-                  "descriptorName": ""
-                },
-                {
-                  "nameOnMethod": "input",
-                  "name": "input",
-                  "jsonName": null,
-                  "type": "OnlineStore.Products.CreateUpdateProductDto",
-                  "typeSimple": "OnlineStore.Products.CreateUpdateProductDto",
-                  "isOptional": false,
-                  "defaultValue": null,
-                  "constraintTypes": null,
-                  "bindingSourceId": "Body",
-                  "descriptorName": ""
-                }
-              ],
-              "returnValue": {
-                "type": "OnlineStore.Products.ProductDto",
-                "typeSimple": "OnlineStore.Products.ProductDto"
-              },
-              "allowAnonymous": null,
-              "implementFrom": "Volo.Abp.Application.Services.IUpdateAppService<OnlineStore.Products.ProductDto,System.Int32,OnlineStore.Products.CreateUpdateProductDto>"
-            },
-            "DeleteAsyncById": {
-              "uniqueName": "DeleteAsyncById",
-              "name": "DeleteAsync",
-              "httpMethod": "DELETE",
-              "url": "api/app/products/{id}",
-              "supportedVersions": [],
-              "parametersOnMethod": [
-                {
-                  "name": "id",
-                  "typeAsString": "System.Int32, System.Private.CoreLib",
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null
-                }
-              ],
-              "parameters": [
-                {
-                  "nameOnMethod": "id",
-                  "name": "id",
-                  "jsonName": null,
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null,
-                  "constraintTypes": [],
-                  "bindingSourceId": "Path",
-                  "descriptorName": ""
-                }
-              ],
-              "returnValue": {
-                "type": "System.Void",
-                "typeSimple": "System.Void"
-              },
-              "allowAnonymous": null,
-              "implementFrom": "Volo.Abp.Application.Services.IDeleteAppService<System.Int32>"
-            },
-            "GetAsyncById": {
-              "uniqueName": "GetAsyncById",
-              "name": "GetAsync",
-              "httpMethod": "GET",
-              "url": "api/app/products/{id}",
-              "supportedVersions": [],
-              "parametersOnMethod": [
-                {
-                  "name": "id",
-                  "typeAsString": "System.Int32, System.Private.CoreLib",
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null
-                }
-              ],
-              "parameters": [
-                {
-                  "nameOnMethod": "id",
-                  "name": "id",
-                  "jsonName": null,
-                  "type": "System.Int32",
-                  "typeSimple": "number",
-                  "isOptional": false,
-                  "defaultValue": null,
-                  "constraintTypes": [],
-                  "bindingSourceId": "Path",
-                  "descriptorName": ""
-                }
-              ],
-              "returnValue": {
-                "type": "OnlineStore.Products.ProductDto",
-                "typeSimple": "OnlineStore.Products.ProductDto"
-              },
-              "allowAnonymous": null,
-              "implementFrom": "Volo.Abp.Application.Services.IReadOnlyAppService<OnlineStore.Products.ProductDto,OnlineStore.Products.ProductDto,System.Int32,Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto>"
-            },
             "GetListAsyncByInput": {
               "uniqueName": "GetListAsyncByInput",
               "name": "GetListAsync",
               "httpMethod": "GET",
-              "url": "api/app/products",
+              "url": "api/app/cached-product",
               "supportedVersions": [],
               "parametersOnMethod": [
                 {
@@ -1548,8 +1934,584 @@
                 "type": "Volo.Abp.Application.Dtos.PagedResultDto<OnlineStore.Products.ProductDto>",
                 "typeSimple": "Volo.Abp.Application.Dtos.PagedResultDto<OnlineStore.Products.ProductDto>"
               },
-              "allowAnonymous": null,
+              "allowAnonymous": false,
               "implementFrom": "Volo.Abp.Application.Services.IReadOnlyAppService<OnlineStore.Products.ProductDto,OnlineStore.Products.ProductDto,System.Int32,Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto>"
+            },
+            "GetAsyncById": {
+              "uniqueName": "GetAsyncById",
+              "name": "GetAsync",
+              "httpMethod": "GET",
+              "url": "api/app/cached-product/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Products.ProductDto",
+                "typeSimple": "OnlineStore.Products.ProductDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Volo.Abp.Application.Services.IReadOnlyAppService<OnlineStore.Products.ProductDto,OnlineStore.Products.ProductDto,System.Int32,Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto>"
+            },
+            "CreateAsyncByInput": {
+              "uniqueName": "CreateAsyncByInput",
+              "name": "CreateAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-product",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "OnlineStore.Products.CreateUpdateProductDto, OnlineStore.Application.Contracts",
+                  "type": "OnlineStore.Products.CreateUpdateProductDto",
+                  "typeSimple": "OnlineStore.Products.CreateUpdateProductDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "OnlineStore.Products.CreateUpdateProductDto",
+                  "typeSimple": "OnlineStore.Products.CreateUpdateProductDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Products.ProductDto",
+                "typeSimple": "OnlineStore.Products.ProductDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Volo.Abp.Application.Services.ICreateAppService<OnlineStore.Products.ProductDto,OnlineStore.Products.CreateUpdateProductDto>"
+            },
+            "UpdateAsyncByIdAndInput": {
+              "uniqueName": "UpdateAsyncByIdAndInput",
+              "name": "UpdateAsync",
+              "httpMethod": "PUT",
+              "url": "api/app/cached-product/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "input",
+                  "typeAsString": "OnlineStore.Products.CreateUpdateProductDto, OnlineStore.Application.Contracts",
+                  "type": "OnlineStore.Products.CreateUpdateProductDto",
+                  "typeSimple": "OnlineStore.Products.CreateUpdateProductDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "OnlineStore.Products.CreateUpdateProductDto",
+                  "typeSimple": "OnlineStore.Products.CreateUpdateProductDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Products.ProductDto",
+                "typeSimple": "OnlineStore.Products.ProductDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Volo.Abp.Application.Services.IUpdateAppService<OnlineStore.Products.ProductDto,System.Int32,OnlineStore.Products.CreateUpdateProductDto>"
+            },
+            "DeleteAsyncById": {
+              "uniqueName": "DeleteAsyncById",
+              "name": "DeleteAsync",
+              "httpMethod": "DELETE",
+              "url": "api/app/cached-product/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Void",
+                "typeSimple": "System.Void"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Volo.Abp.Application.Services.IDeleteAppService<System.Int32>"
+            },
+            "GetByCategoryAsyncByCategoryIdAndOnlyPublished": {
+              "uniqueName": "GetByCategoryAsyncByCategoryIdAndOnlyPublished",
+              "name": "GetByCategoryAsync",
+              "httpMethod": "GET",
+              "url": "api/app/cached-product/by-category/{categoryId}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "categoryId",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "onlyPublished",
+                  "typeAsString": "System.Boolean, System.Private.CoreLib",
+                  "type": "System.Boolean",
+                  "typeSimple": "boolean",
+                  "isOptional": true,
+                  "defaultValue": false
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "categoryId",
+                  "name": "categoryId",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "onlyPublished",
+                  "name": "onlyPublished",
+                  "jsonName": null,
+                  "type": "System.Boolean",
+                  "typeSimple": "boolean",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<OnlineStore.Products.ProductDto>",
+                "typeSimple": "[OnlineStore.Products.ProductDto]"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Products.IProductsAppService"
+            },
+            "GetPublishedProductsAsyncByCategoryId": {
+              "uniqueName": "GetPublishedProductsAsyncByCategoryId",
+              "name": "GetPublishedProductsAsync",
+              "httpMethod": "GET",
+              "url": "api/app/cached-product/published-products",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "categoryId",
+                  "typeAsString": "System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib",
+                  "type": "System.Int32?",
+                  "typeSimple": "number?",
+                  "isOptional": true,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "categoryId",
+                  "name": "categoryId",
+                  "jsonName": null,
+                  "type": "System.Int32?",
+                  "typeSimple": "number?",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<OnlineStore.Products.ProductDto>",
+                "typeSimple": "[OnlineStore.Products.ProductDto]"
+              },
+              "allowAnonymous": true,
+              "implementFrom": "OnlineStore.Products.IProductsAppService"
+            },
+            "PublishAsyncById": {
+              "uniqueName": "PublishAsyncById",
+              "name": "PublishAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-product/{id}/publish",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Products.ProductDto",
+                "typeSimple": "OnlineStore.Products.ProductDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Products.IProductsAppService"
+            },
+            "UnpublishAsyncById": {
+              "uniqueName": "UnpublishAsyncById",
+              "name": "UnpublishAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-product/{id}/unpublish",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Products.ProductDto",
+                "typeSimple": "OnlineStore.Products.ProductDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Products.IProductsAppService"
+            },
+            "UpdateStockAsyncByIdAndInput": {
+              "uniqueName": "UpdateStockAsyncByIdAndInput",
+              "name": "UpdateStockAsync",
+              "httpMethod": "PUT",
+              "url": "api/app/cached-product/{id}/stock",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "input",
+                  "typeAsString": "OnlineStore.Products.UpdateStockDto, OnlineStore.Application.Contracts",
+                  "type": "OnlineStore.Products.UpdateStockDto",
+                  "typeSimple": "OnlineStore.Products.UpdateStockDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "OnlineStore.Products.UpdateStockDto",
+                  "typeSimple": "OnlineStore.Products.UpdateStockDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Products.ProductDto",
+                "typeSimple": "OnlineStore.Products.ProductDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Products.IProductsAppService"
+            },
+            "AdjustStockAsyncByIdAndInput": {
+              "uniqueName": "AdjustStockAsyncByIdAndInput",
+              "name": "AdjustStockAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-product/{id}/adjust-stock",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "input",
+                  "typeAsString": "OnlineStore.Products.AdjustStockDto, OnlineStore.Application.Contracts",
+                  "type": "OnlineStore.Products.AdjustStockDto",
+                  "typeSimple": "OnlineStore.Products.AdjustStockDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "OnlineStore.Products.AdjustStockDto",
+                  "typeSimple": "OnlineStore.Products.AdjustStockDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Products.ProductDto",
+                "typeSimple": "OnlineStore.Products.ProductDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Products.IProductsAppService"
+            },
+            "BulkUpdateStockAsyncByInput": {
+              "uniqueName": "BulkUpdateStockAsyncByInput",
+              "name": "BulkUpdateStockAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-product/bulk-update-stock",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "OnlineStore.Products.BulkUpdateStockDto, OnlineStore.Application.Contracts",
+                  "type": "OnlineStore.Products.BulkUpdateStockDto",
+                  "typeSimple": "OnlineStore.Products.BulkUpdateStockDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "OnlineStore.Products.BulkUpdateStockDto",
+                  "typeSimple": "OnlineStore.Products.BulkUpdateStockDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Void",
+                "typeSimple": "System.Void"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Products.IProductsAppService"
+            },
+            "CheckStockAsyncByInput": {
+              "uniqueName": "CheckStockAsyncByInput",
+              "name": "CheckStockAsync",
+              "httpMethod": "POST",
+              "url": "api/app/cached-product/check-stock",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "OnlineStore.Products.CheckStockInput, OnlineStore.Application.Contracts",
+                  "type": "OnlineStore.Products.CheckStockInput",
+                  "typeSimple": "OnlineStore.Products.CheckStockInput",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "OnlineStore.Products.CheckStockInput",
+                  "typeSimple": "OnlineStore.Products.CheckStockInput",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "OnlineStore.Products.StockCheckResultDto",
+                "typeSimple": "OnlineStore.Products.StockCheckResultDto"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Products.IProductsAppService"
+            },
+            "GetLowStockAsyncByThreshold": {
+              "uniqueName": "GetLowStockAsyncByThreshold",
+              "name": "GetLowStockAsync",
+              "httpMethod": "GET",
+              "url": "api/app/cached-product/low-stock",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "threshold",
+                  "typeAsString": "System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib",
+                  "type": "System.Int32?",
+                  "typeSimple": "number?",
+                  "isOptional": true,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "threshold",
+                  "name": "threshold",
+                  "jsonName": null,
+                  "type": "System.Int32?",
+                  "typeSimple": "number?",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<OnlineStore.Products.ProductDto>",
+                "typeSimple": "[OnlineStore.Products.ProductDto]"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Products.IProductsAppService"
+            },
+            "GetOutOfStockAsync": {
+              "uniqueName": "GetOutOfStockAsync",
+              "name": "GetOutOfStockAsync",
+              "httpMethod": "GET",
+              "url": "api/app/cached-product/out-of-stock",
+              "supportedVersions": [],
+              "parametersOnMethod": [],
+              "parameters": [],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<OnlineStore.Products.ProductDto>",
+                "typeSimple": "[OnlineStore.Products.ProductDto]"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "OnlineStore.Products.IProductsAppService"
             }
           }
         }
@@ -4362,6 +5324,42 @@
           "minimum": null,
           "maximum": null,
           "regex": null
+        },
+        {
+          "name": "IsActive",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "DisplayOrder",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ProductCount",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
         }
       ]
     },
@@ -4377,9 +5375,9 @@
           "jsonName": null,
           "type": "System.String",
           "typeSimple": "string",
-          "isRequired": true,
+          "isRequired": false,
           "minLength": null,
-          "maxLength": 300,
+          "maxLength": null,
           "minimum": null,
           "maximum": null,
           "regex": null
@@ -4389,9 +5387,9 @@
           "jsonName": null,
           "type": "System.String",
           "typeSimple": "string",
-          "isRequired": true,
+          "isRequired": false,
           "minLength": null,
-          "maxLength": 300,
+          "maxLength": null,
           "minimum": null,
           "maximum": null,
           "regex": null
@@ -4401,9 +5399,9 @@
           "jsonName": null,
           "type": "System.String",
           "typeSimple": "string",
-          "isRequired": true,
+          "isRequired": false,
           "minLength": null,
-          "maxLength": 1000,
+          "maxLength": null,
           "minimum": null,
           "maximum": null,
           "regex": null
@@ -4413,9 +5411,174 @@
           "jsonName": null,
           "type": "System.String",
           "typeSimple": "string",
-          "isRequired": true,
+          "isRequired": false,
           "minLength": null,
-          "maxLength": 1000,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "IsActive",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "DisplayOrder",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "OnlineStore.Categories.GetCategoriesInput": {
+      "baseType": "Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto",
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "IsActive",
+          "jsonName": null,
+          "type": "System.Boolean?",
+          "typeSimple": "boolean?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "SearchTerm",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "OnlineStore.Products.AdjustStockDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "QuantityChange",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Reason",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "OnlineStore.Products.BulkStockItem": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "ProductId",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "StockQuantity",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "OnlineStore.Products.BulkUpdateStockDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "Items",
+          "jsonName": null,
+          "type": "[OnlineStore.Products.BulkStockItem]",
+          "typeSimple": "[OnlineStore.Products.BulkStockItem]",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "OnlineStore.Products.CheckStockInput": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "Items",
+          "jsonName": null,
+          "type": "[OnlineStore.Products.StockCheckItem]",
+          "typeSimple": "[OnlineStore.Products.StockCheckItem]",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
           "minimum": null,
           "maximum": null,
           "regex": null
@@ -4490,10 +5653,58 @@
           "regex": null
         },
         {
-          "name": "ExtraDescription",
+          "name": "SKU",
           "jsonName": null,
           "type": "System.String",
           "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Price",
+          "jsonName": null,
+          "type": "System.Decimal",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "StockQuantity",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "IsActive",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "IsPublished",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
           "isRequired": false,
           "minLength": null,
           "maxLength": null,
@@ -4611,6 +5822,282 @@
           "jsonName": null,
           "type": "System.String",
           "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "SKU",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Price",
+          "jsonName": null,
+          "type": "System.Decimal",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "StockQuantity",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "IsActive",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "IsPublished",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "InventoryValue",
+          "jsonName": null,
+          "type": "System.Decimal",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "IsOutOfStock",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "IsLowStock",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "OnlineStore.Products.StockCheckItem": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "ProductId",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Quantity",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "OnlineStore.Products.StockCheckItemResultDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "ProductId",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ProductName",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "SKU",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "RequestedQuantity",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "AvailableQuantity",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "IsAvailable",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Message",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "OnlineStore.Products.StockCheckResultDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "AllAvailable",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Items",
+          "jsonName": null,
+          "type": "[OnlineStore.Products.StockCheckItemResultDto]",
+          "typeSimple": "[OnlineStore.Products.StockCheckItemResultDto]",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "OnlineStore.Products.UpdateStockDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "StockQuantity",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
           "isRequired": false,
           "minLength": null,
           "maxLength": null,
