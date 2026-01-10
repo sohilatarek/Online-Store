@@ -10,15 +10,21 @@ using OnlineStore.EntityFrameworkCore;
 using OnlineStore.Products;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.MultiTenancy;
 
-namespace OnlineStore.Repositories
+namespace OnlineStore.Products
 {
  
     public class EfCoreProductRepository : EfCoreRepository<OnlineStoreDbContext, Product, int>, IProductRepository
     {
-        public EfCoreProductRepository(IDbContextProvider<OnlineStoreDbContext> dbContextProvider)
+        private readonly ICurrentTenant _currentTenant;
+
+        public EfCoreProductRepository(
+            IDbContextProvider<OnlineStoreDbContext> dbContextProvider,
+            ICurrentTenant currentTenant)
             : base(dbContextProvider)
         {
+            _currentTenant = currentTenant;
         }
 
         /// <summary>
@@ -55,11 +61,22 @@ namespace OnlineStore.Repositories
 
             var query = dbSet.Where(p => p.SKU == sku);
 
+            // Apply tenant filtering for multi-tenancy support
+            if (_currentTenant.Id.HasValue)
+            {
+                query = query.Where(p => p.TenantId == _currentTenant.Id);
+            }
+            else
+            {
+                query = query.Where(p => p.TenantId == null);
+            }
+
             if (excludeId.HasValue)
             {
                 query = query.Where(p => p.Id != excludeId.Value);
             }
-        return !await query.AnyAsync(cancellationToken);
+
+            return !await query.AnyAsync(cancellationToken);
         }
 
         public async Task<Product> FindBySKUAsync(

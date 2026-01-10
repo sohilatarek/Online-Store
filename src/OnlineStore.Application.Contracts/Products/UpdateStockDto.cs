@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace OnlineStore.Products
 {
@@ -8,9 +7,7 @@ namespace OnlineStore.Products
     /// </summary>
     public class UpdateStockDto
     {
-     
-        [Required]
-        [Range(0, int.MaxValue, ErrorMessage = "Stock quantity must be greater than or equal to zero")]
+       
         public int StockQuantity { get; set; }
     }
 
@@ -20,10 +17,8 @@ namespace OnlineStore.Products
     public class AdjustStockDto
     {
        
-        [Required]
         public int QuantityChange { get; set; }
 
-        [StringLength(500)]
         public string Reason { get; set; }
     }
 
@@ -32,8 +27,7 @@ namespace OnlineStore.Products
     /// </summary>
     public class BulkUpdateStockDto
     {
-        
-        [Required]
+       
         public List<BulkStockItem> Items { get; set; }
     }
 
@@ -43,12 +37,8 @@ namespace OnlineStore.Products
     public class BulkStockItem
     {
        
-        [Required]
         public int ProductId { get; set; }
 
-      
-        [Required]
-        [Range(0, int.MaxValue)]
         public int StockQuantity { get; set; }
     }
 
@@ -57,8 +47,7 @@ namespace OnlineStore.Products
     /// </summary>
     public class CheckStockInput
     {
-        
-        [Required]
+       
         public List<StockCheckItem> Items { get; set; }
     }
 
@@ -67,12 +56,9 @@ namespace OnlineStore.Products
     /// </summary>
     public class StockCheckItem
     {
-      
-        [Required]
+       
         public int ProductId { get; set; }
 
-        [Required]
-        [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
     }
 

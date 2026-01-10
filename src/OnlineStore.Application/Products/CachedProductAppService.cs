@@ -175,11 +175,20 @@ namespace OnlineStore.Products
         private async Task InvalidateCacheAsync(int categoryId, int? productId = null)
         {
             var tenantId = _currentTenant.Id?.ToString() ?? "host";
+            
+            // Invalidate category-specific caches
             await _listCache.RemoveAsync($"Products:ByCategoryId:{categoryId}:true:{tenantId}");
             await _listCache.RemoveAsync($"Products:ByCategoryId:{categoryId}:false:{tenantId}");
             await _listCache.RemoveAsync($"Products:Published:{categoryId}:{tenantId}");
+            
+            // Invalidate global published products cache
             await _listCache.RemoveAsync($"Products:Published:all:{tenantId}");
+            
+            // Invalidate aggregate query caches
+            await _listCache.RemoveAsync($"Products:LowStock:{tenantId}");
+            await _listCache.RemoveAsync($"Products:OutOfStock:{tenantId}");
 
+            // Invalidate single product cache if product ID provided
             if (productId.HasValue)
             {
                 await _singleCache.RemoveAsync($"Products:ById:{productId.Value}:{tenantId}");
@@ -189,7 +198,13 @@ namespace OnlineStore.Products
         private async Task InvalidateAllProductCachesAsync()
         {
             var tenantId = _currentTenant.Id?.ToString() ?? "host";
+            
+            // Invalidate all published products caches
             await _listCache.RemoveAsync($"Products:Published:all:{tenantId}");
+            
+            // Invalidate aggregate query caches
+            await _listCache.RemoveAsync($"Products:LowStock:{tenantId}");
+            await _listCache.RemoveAsync($"Products:OutOfStock:{tenantId}");
         }
     }
 }

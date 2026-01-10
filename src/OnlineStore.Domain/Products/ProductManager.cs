@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using OnlineStore;
 using OnlineStore.Categories;
 using System;
 using System.Threading.Tasks;
@@ -119,7 +120,7 @@ namespace OnlineStore.Products
             // Business Rule: Product must be active to be published
             if (!product.IsActive)
             {
-                throw new BusinessException("OnlineStore:006")
+                throw new BusinessException(OnlineStoreErrorCodes.CannotPublishInactiveProduct)
                     .WithData("ProductId", product.Id)
                     .WithData("ProductName", product.NameEn)
                     .WithData("Message", "Cannot publish an inactive product. Please activate it first.");
@@ -239,7 +240,7 @@ namespace OnlineStore.Products
 
             if (!product.HasSufficientStock(quantity))
             {
-                throw new BusinessException("OnlineStore:005")
+                throw new BusinessException(OnlineStoreErrorCodes.InsufficientStock)
                     .WithData("ProductId", product.Id)
                     .WithData("ProductName", product.NameEn)
                     .WithData("AvailableStock", product.StockQuantity)
@@ -277,24 +278,33 @@ namespace OnlineStore.Products
 
             if (!isUnique)
             {
-                throw new BusinessException("OnlineStore:010")
+                throw new BusinessException(OnlineStoreErrorCodes.SKUAlreadyExists)
                     .WithData("SKU", sku)
                     .WithData("Message", $"Product with SKU '{sku}' already exists.");
             }
         }
 
         /// <summary>
-        /// Validates that category exists
+        /// Validates that category exists and is active
         /// </summary>
         private async Task ValidateCategoryExistsAsync(int categoryId)
         {
-            var exists = await _categoryRepository.AnyAsync(c => c.Id == categoryId);
+            var category = await _categoryRepository.FirstOrDefaultAsync(c => c.Id == categoryId);
 
-            if (!exists)
+            if (category == null)
             {
-                throw new BusinessException("OnlineStore:004")
+                throw new BusinessException(OnlineStoreErrorCodes.CategoryNotFound)
                     .WithData("CategoryId", categoryId)
                     .WithData("Message", $"Category with ID {categoryId} does not exist.");
+            }
+
+            // Business Rule: Category must be active to be used
+            if (!category.IsActive)
+            {
+                throw new BusinessException(OnlineStoreErrorCodes.CategoryNotActive)
+                    .WithData("CategoryId", categoryId)
+                    .WithData("CategoryName", category.NameEn)
+                    .WithData("Message", $"Category with ID {categoryId} is not active and cannot be used.");
             }
         }
 
@@ -305,7 +315,7 @@ namespace OnlineStore.Products
         {
             if (price < 0)
             {
-                throw new BusinessException("OnlineStore:003")
+                throw new BusinessException(OnlineStoreErrorCodes.PriceCannotBeNegative)
                     .WithData("Price", price)
                     .WithData("Message", "Price cannot be negative.");
             }
@@ -318,7 +328,7 @@ namespace OnlineStore.Products
         {
             if (quantity < 0)
             {
-                throw new BusinessException("OnlineStore:004")
+                throw new BusinessException(OnlineStoreErrorCodes.StockQuantityCannotBeNegative)
                     .WithData("Quantity", quantity)
                     .WithData("Message", "Stock quantity cannot be negative.");
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using OnlineStore;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
@@ -84,7 +85,7 @@ namespace OnlineStore.Categories
         {
             if (newOrder < 0)
             {
-                throw new BusinessException("OnlineStore:007")
+                throw new BusinessException(OnlineStoreErrorCodes.InvalidDisplayOrder)
                     .WithData("DisplayOrder", newOrder)
                     .WithData("Message", "Display order must be a positive number.");
             }

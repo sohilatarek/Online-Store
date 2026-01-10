@@ -249,7 +249,10 @@ namespace OnlineStore.Products
             return ObjectMapper.Map<Product, ProductDto>(product);
         }
 
-      
+        /// <summary>
+        /// Bulk updates stock for multiple products
+        /// Uses UnitOfWork transaction to ensure all updates succeed or fail together
+        /// </summary>
         [Authorize(OnlineStorePermissions.Products.ManageStock)]
         public async Task BulkUpdateStockAsync(BulkUpdateStockDto input)
         {
@@ -263,12 +266,11 @@ namespace OnlineStore.Products
                 throw new ArgumentException("Items list cannot be null or empty", nameof(input));
             }
 
-           
+       
             var productIds = input.Items.Select(i => i.ProductId).Distinct().ToList();
             var products = await _productRepository.GetByIdsAsync(productIds);
             var productDict = products.ToDictionary(p => p.Id);
 
-            
             var missingProducts = input.Items
                 .Where(item => !productDict.ContainsKey(item.ProductId))
                 .Select(item => item.ProductId)
@@ -279,6 +281,7 @@ namespace OnlineStore.Products
                 throw new EntityNotFoundException(typeof(Product), missingProducts.First());
             }
 
+            // Update all products (transaction ensures atomicity)
             foreach (var item in input.Items)
             {
                 var product = productDict[item.ProductId];
@@ -286,7 +289,7 @@ namespace OnlineStore.Products
                 await _productRepository.UpdateAsync(product);
             }
 
-           
+            // Save all changes atomically (UnitOfWork handles transaction)
             await CurrentUnitOfWork.SaveChangesAsync();
         }
 

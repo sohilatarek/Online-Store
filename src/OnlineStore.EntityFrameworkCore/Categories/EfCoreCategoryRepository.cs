@@ -10,7 +10,7 @@ using OnlineStore.EntityFrameworkCore;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace OnlineStore.Repositories
+namespace OnlineStore.Categories
 {
    
     public class EfCoreCategoryRepository : EfCoreRepository<OnlineStoreDbContext, Category, int>, ICategoryRepository

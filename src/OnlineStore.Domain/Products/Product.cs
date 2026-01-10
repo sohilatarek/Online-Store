@@ -1,4 +1,5 @@
 using System;
+using OnlineStore;
 using OnlineStore.Categories;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -104,7 +105,7 @@ namespace OnlineStore.Products
         {
             if (price < 0)
             {
-                throw new BusinessException("OnlineStore:003")
+                throw new BusinessException(OnlineStoreErrorCodes.PriceCannotBeNegative)
                     .WithData("Price", price)
                     .WithData("Message", "Price cannot be negative");
             }
@@ -116,7 +117,7 @@ namespace OnlineStore.Products
         {
             if (quantity < 0)
             {
-                throw new BusinessException("OnlineStore:004")
+                throw new BusinessException(OnlineStoreErrorCodes.StockQuantityCannotBeNegative)
                     .WithData("Quantity", quantity)
                     .WithData("Message", "Stock quantity cannot be negative");
             }
@@ -133,7 +134,7 @@ namespace OnlineStore.Products
 
             if (newStock < 0)
             {
-                throw new BusinessException("OnlineStore:005")
+                throw new BusinessException(OnlineStoreErrorCodes.InsufficientStock)
                     .WithData("CurrentStock", StockQuantity)
                     .WithData("RequestedChange", quantity)
                     .WithData("Message", "Insufficient stock quantity");
@@ -158,7 +159,7 @@ namespace OnlineStore.Products
         {
             if (!IsActive)
             {
-                throw new BusinessException("OnlineStore:006")
+                throw new BusinessException(OnlineStoreErrorCodes.CannotPublishInactiveProduct)
                     .WithData("ProductId", Id)
                     .WithData("ProductName", NameEn)
                     .WithData("Message", "Cannot publish an inactive product");
