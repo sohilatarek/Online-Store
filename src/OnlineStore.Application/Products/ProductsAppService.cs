@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using OnlineStore.Permissions;
 using OnlineStore.Products;
 using System;
@@ -19,13 +20,16 @@ namespace OnlineStore.Products
     {
         private readonly IProductRepository _productRepository;
         private readonly ProductManager _productManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProductsAppService(
             IProductRepository repository,
-            ProductManager productManager) : base(repository)
+            ProductManager productManager,
+            IHttpContextAccessor httpContextAccessor) : base(repository)
         {
             _productRepository = repository;
             _productManager = productManager;
+            _httpContextAccessor = httpContextAccessor;
 
             // Set default permissions
             GetPolicyName = OnlineStorePermissions.Products.Default;
@@ -39,13 +43,73 @@ namespace OnlineStore.Products
         [Authorize(OnlineStorePermissions.Products.Default)]
         public override async Task<PagedResultDto<ProductDto>> GetListAsync(PagedAndSortedResultRequestDto input)
         {
-           
-            var productsInput = input as GetProductsInput ?? new GetProductsInput
+        
+            GetProductsInput productsInput;
+            if (input is GetProductsInput getProductsInput)
             {
-                SkipCount = input.SkipCount,
-                MaxResultCount = input.MaxResultCount,
-                Sorting = input.Sorting
-            };
+                productsInput = getProductsInput;
+            }
+            else
+            {
+                productsInput = new GetProductsInput
+                {
+                    SkipCount = input.SkipCount,
+                    MaxResultCount = input.MaxResultCount,
+                    Sorting = input.Sorting
+                };
+            }
+               var httpContext = _httpContextAccessor?.HttpContext;
+            if (httpContext != null && httpContext.Request.Query != null)
+            {
+                var query = httpContext.Request.Query;
+                if (query.ContainsKey("searchTerm"))
+                {
+                    var searchTermValue = query["searchTerm"].ToString().Trim();
+                    if (!string.IsNullOrWhiteSpace(searchTermValue))
+                    {
+                        productsInput.SearchTerm = searchTermValue;
+                    }
+                    else if (string.IsNullOrWhiteSpace(productsInput.SearchTerm))
+                    {
+                        productsInput.SearchTerm = null;
+                    }
+                }
+              
+                if (query.ContainsKey("categoryId") && int.TryParse(query["categoryId"], out var categoryId))
+                {
+                    productsInput.CategoryId = categoryId;
+                }
+                
+                if (query.ContainsKey("isActive") && bool.TryParse(query["isActive"], out var isActive))
+                {
+                    productsInput.IsActive = isActive;
+                }
+                
+                if (query.ContainsKey("isPublished") && bool.TryParse(query["isPublished"], out var isPublished))
+                {
+                    productsInput.IsPublished = isPublished;
+                }
+                
+                if (query.ContainsKey("minPrice") && decimal.TryParse(query["minPrice"], out var minPrice))
+                {
+                    productsInput.MinPrice = minPrice;
+                }
+                
+                if (query.ContainsKey("maxPrice") && decimal.TryParse(query["maxPrice"], out var maxPrice))
+                {
+                    productsInput.MaxPrice = maxPrice;
+                }
+                
+                if (query.ContainsKey("isLowStock") && bool.TryParse(query["isLowStock"], out var isLowStock))
+                {
+                    productsInput.IsLowStock = isLowStock;
+                }
+                
+                if (query.ContainsKey("isOutOfStock") && bool.TryParse(query["isOutOfStock"], out var isOutOfStock))
+                {
+                    productsInput.IsOutOfStock = isOutOfStock;
+                }
+            }
 
         
             var totalCount = await _productRepository.GetCountAsync(
@@ -263,7 +327,38 @@ namespace OnlineStore.Products
 
             if (input.Items == null || input.Items.Count == 0)
             {
-                throw new ArgumentException("Items list cannot be null or empty", nameof(input));
+                throw new UserFriendlyException(L["Product:BulkUpdate:ItemsRequired"]);
+            }
+
+            // Validate batch size to prevent performance issues
+            const int maxBatchSize = 1000;
+            if (input.Items.Count > maxBatchSize)
+            {
+                var message = L["Product:BulkUpdate:TooManyItems"].ToString().Replace("{MaxSize}", maxBatchSize.ToString());
+                throw new UserFriendlyException(message);
+            }
+
+            // Validate for duplicate product IDs
+            var duplicateIds = input.Items
+                .GroupBy(i => i.ProductId)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
+            
+            if (duplicateIds.Any())
+            {
+                var message = L["Product:BulkUpdate:DuplicateProductIds"].ToString().Replace("{Ids}", string.Join(", ", duplicateIds));
+                throw new UserFriendlyException(message);
+            }
+
+            // Validate stock quantities
+            foreach (var item in input.Items)
+            {
+                if (item.StockQuantity < 0)
+                {
+                    var message = L["Product:BulkUpdate:NegativeStock"].ToString().Replace("{ProductId}", item.ProductId.ToString());
+                    throw new UserFriendlyException(message);
+                }
             }
 
        
@@ -282,6 +377,8 @@ namespace OnlineStore.Products
             }
 
             // Update all products (transaction ensures atomicity)
+            // Note: UnitOfWork transaction ensures all updates succeed or fail together
+            // For high-concurrency scenarios, consider adding optimistic concurrency (RowVersion)
             foreach (var item in input.Items)
             {
                 var product = productDict[item.ProductId];
@@ -290,6 +387,7 @@ namespace OnlineStore.Products
             }
 
             // Save all changes atomically (UnitOfWork handles transaction)
+            // If any update fails, entire transaction rolls back
             await CurrentUnitOfWork.SaveChangesAsync();
         }
 

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using OnlineStore.Categories;
 using OnlineStore.Localization;
 using OnlineStore.Products;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,8 +62,20 @@ namespace OnlineStore.Validators
                 .WithMessage(_localizer["Validation:Product:SKUMaxLength"])
                 .Must(BeValidSKUFormat)
                 .WithMessage(_localizer["Validation:Product:InvalidSKUFormat"])
-                .MustAsync(BeUniqueSKUAsync)
-                .WithMessage(_localizer["Validation:Product:SKUAlreadyExists"]);
+                .CustomAsync(async (sku, context, cancellation) =>
+                {
+                   
+                    if (string.IsNullOrWhiteSpace(sku))
+                    {
+                        return;
+                    }
+
+                    var dto = (CreateUpdateProductDto)context.InstanceToValidate;
+                    var isUnique = await BeUniqueSKUAsync(dto, sku, cancellation);
+                    if (!isUnique)
+                    { context.AddFailure(_localizer["Validation:Product:SKUAlreadyExists"]);
+                    }
+                });
 
         
 
@@ -119,7 +132,24 @@ namespace OnlineStore.Validators
             string sku,
             CancellationToken cancellationToken)
         {
-            return await _productRepository.IsSKUUniqueAsync(sku, dto.Id);
+            if (string.IsNullOrWhiteSpace(sku))
+            {
+                return true; 
+            }
+
+            try
+            {
+                // For new products (Id == 0), pass null to excludeId
+                // For existing products, pass the actual Id
+                int? excludeId = dto.Id > 0 ? dto.Id : null;
+                var isUnique = await _productRepository.IsSKUUniqueAsync(sku, excludeId);
+                return isUnique;
+            }
+            catch (Exception ex)
+            {
+                
+                return false;
+            }
         }
 
     
@@ -127,7 +157,19 @@ namespace OnlineStore.Validators
             int categoryId,
             CancellationToken cancellationToken)
         {
-            return await _categoryRepository.AnyAsync(c => c.Id == categoryId, cancellationToken);
+             if (categoryId <= 0)
+            {
+                return true; 
+            }
+
+            try
+            {
+                return await _categoryRepository.AnyAsync(c => c.Id == categoryId, cancellationToken);
+            }
+            catch
+            {
+               return false;
+            }
         }
     }
 }

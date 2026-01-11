@@ -168,10 +168,12 @@ namespace OnlineStore.Products
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
+               
+                var searchLower = searchTerm.ToLower();
                 query = query.Where(p =>
-                    p.NameEn.Contains(searchTerm) ||
-                    p.NameAr.Contains(searchTerm) ||
-                    p.SKU.Contains(searchTerm));
+                    p.NameEn.ToLower().Contains(searchLower) ||
+                    p.NameAr.ToLower().Contains(searchLower) ||
+                    p.SKU.ToLower().Contains(searchLower));
             }
 
             if (minPrice.HasValue)
@@ -245,10 +247,12 @@ namespace OnlineStore.Products
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
+              
+                var searchLower = searchTerm.ToLower();
                 query = query.Where(p =>
-                    p.NameEn.Contains(searchTerm) ||
-                    p.NameAr.Contains(searchTerm) ||
-                    p.SKU.Contains(searchTerm));
+                    p.NameEn.ToLower().Contains(searchLower) ||
+                    p.NameAr.ToLower().Contains(searchLower) ||
+                    p.SKU.ToLower().Contains(searchLower));
             }
 
             if (minPrice.HasValue)

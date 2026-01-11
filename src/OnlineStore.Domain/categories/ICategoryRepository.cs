@@ -38,5 +38,7 @@ namespace OnlineStore.Categories
             bool? isActive = null,
             string searchTerm = null,
             CancellationToken cancellationToken = default);
+
+        Task<int> GetNextIdAsync(CancellationToken cancellationToken = default);
     }
 }

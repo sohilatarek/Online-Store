@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using OnlineStore.Categories;
 using OnlineStore.Permissions;
 using System;
@@ -19,13 +20,16 @@ namespace OnlineStore.Categories
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly CategoryManager _categoryManager;
+        private readonly ILogger<CategoriesAppService> _logger;
 
         public CategoriesAppService(
             ICategoryRepository repository,
-            CategoryManager categoryManager) : base(repository)
+            CategoryManager categoryManager,
+            ILogger<CategoriesAppService> logger) : base(repository)
         {
             _categoryRepository = repository;
             _categoryManager = categoryManager;
+            _logger = logger;
 
             // Set default permissions
             GetPolicyName = OnlineStorePermissions.Categories.Default;
@@ -34,37 +38,93 @@ namespace OnlineStore.Categories
             UpdatePolicyName = OnlineStorePermissions.Categories.Edit;
             DeletePolicyName = OnlineStorePermissions.Categories.Delete;
         }
-
      
         [Authorize(OnlineStorePermissions.Categories.Default)]
-        public async Task<PagedResultDto<CategoryDto>> GetFilteredListAsync(GetCategoriesInput input)
+        public override async Task<PagedResultDto<CategoryDto>> GetListAsync(PagedAndSortedResultRequestDto input)
         {
-            // Get total count with filters
-            var totalCount = await _categoryRepository.GetCountAsync(
-                input.IsActive,
-                input.SearchTerm
-            );
+          
+            var totalCount = await _categoryRepository.GetCountAsync();
 
-            // Get categories with pagination and filters
+      
             var categories = await _categoryRepository.GetListAsync(
                 input.SkipCount,
                 input.MaxResultCount,
-                input.Sorting ?? OnlineStore.OnlineStoreConsts.DefaultCategorySorting,
-                input.IsActive,
-                input.SearchTerm
+                input.Sorting ?? OnlineStore.OnlineStoreConsts.DefaultCategorySorting
             );
 
-            // Get product counts for each category
-            var productCounts = await _categoryRepository.GetProductCountsAsync();
-
-            // Map to DTOs and populate product counts
+           
             var categoryDtos = ObjectMapper.Map<List<Category>, List<CategoryDto>>(categories);
-            foreach (var dto in categoryDtos)
+
+         
+            try
             {
-                dto.ProductCount = productCounts.ContainsKey(dto.Id) ? productCounts[dto.Id] : 0;
+                var productCounts = await _categoryRepository.GetProductCountsAsync();
+                foreach (var dto in categoryDtos)
+                {
+                    dto.ProductCount = productCounts.ContainsKey(dto.Id) ? productCounts[dto.Id] : 0;
+                }
+            }
+            catch (Exception)
+            {
+                              foreach (var dto in categoryDtos)
+                {
+                    dto.ProductCount = 0;
+                }
             }
 
             return new PagedResultDto<CategoryDto>(totalCount, categoryDtos);
+        }
+
+     
+
+        [Authorize(OnlineStorePermissions.Categories.Default)]
+        public async Task<PagedResultDto<CategoryDto>> GetFilteredListAsync(GetCategoriesInput input)
+        {
+            _logger.LogInformation("CategoriesAppService.GetFilteredListAsync called. Input: IsActive={IsActive}, SearchTerm={SearchTerm}, SkipCount={SkipCount}, MaxResultCount={MaxResultCount}, Sorting={Sorting}",
+                input.IsActive, input.SearchTerm, input.SkipCount, input.MaxResultCount, input.Sorting);
+            
+            try
+            {
+                    var totalCount = await _categoryRepository.GetCountAsync(
+                    input.IsActive,
+                    input.SearchTerm
+                );
+                             var categories = await _categoryRepository.GetListAsync(
+                    input.SkipCount,
+                    input.MaxResultCount,
+                    input.Sorting ?? OnlineStore.OnlineStoreConsts.DefaultCategorySorting,
+                    input.IsActive,
+                    input.SearchTerm
+                );
+             
+                var categoryDtos = ObjectMapper.Map<List<Category>, List<CategoryDto>>(categories);
+                    try
+                {
+                    var productCounts = await _categoryRepository.GetProductCountsAsync();
+                    _logger.LogInformation("Step 4 completed: Retrieved product counts for {Count} categories", productCounts?.Count ?? 0);
+                    
+                    foreach (var dto in categoryDtos)
+                    {
+                        dto.ProductCount = productCounts.ContainsKey(dto.Id) ? productCounts[dto.Id] : 0;
+                    }
+                    }
+                catch (Exception ex)
+                {      foreach (var dto in categoryDtos)
+                    {
+                        dto.ProductCount = 0;
+                    }
+                }
+
+                _logger.LogInformation("GetFilteredListAsync completed successfully. Returning {TotalCount} total, {ItemsCount} items", 
+                    totalCount, categoryDtos?.Count ?? 0);
+                return new PagedResultDto<CategoryDto>(totalCount, categoryDtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetFilteredListAsync FAILED. Exception Type: {ExceptionType}, Message: {Message}, StackTrace: {StackTrace}, InnerException: {InnerException}",
+                    ex.GetType().Name, ex.Message, ex.StackTrace, ex.InnerException?.Message);
+                throw;
+            }
         }
 
 
@@ -78,8 +138,16 @@ namespace OnlineStore.Categories
             var category = await _categoryRepository.GetAsync(id);
             var categoryDto = ObjectMapper.Map<Category, CategoryDto>(category);
 
-            // Get product count for this specific category (optimized)
-            categoryDto.ProductCount = await _categoryRepository.GetProductCountAsync(id);
+            // Get product count for this specific category (optimized, with error handling)
+            try
+            {
+                categoryDto.ProductCount = await _categoryRepository.GetProductCountAsync(id);
+            }
+            catch (Exception)
+            {
+                // If product count fails, set to 0 (don't fail the entire request)
+                categoryDto.ProductCount = 0;
+            }
 
             return categoryDto;
         }
@@ -89,7 +157,27 @@ namespace OnlineStore.Categories
         public async Task<List<CategoryDto>> GetActiveListAsync()
         {
             var categories = await _categoryRepository.GetActiveListAsync();
-            return ObjectMapper.Map<List<Category>, List<CategoryDto>>(categories);
+            var categoryDtos = ObjectMapper.Map<List<Category>, List<CategoryDto>>(categories);
+            
+            // Get product counts for each category (with error handling)
+            try
+            {
+                var productCounts = await _categoryRepository.GetProductCountsAsync();
+                foreach (var dto in categoryDtos)
+                {
+                    dto.ProductCount = productCounts.ContainsKey(dto.Id) ? productCounts[dto.Id] : 0;
+                }
+            }
+            catch (Exception)
+            {
+                // If product counts fail, set all to 0 (don't fail the entire request)
+                foreach (var dto in categoryDtos)
+                {
+                    dto.ProductCount = 0;
+                }
+            }
+            
+            return categoryDtos;
         }
 
       
@@ -101,9 +189,16 @@ namespace OnlineStore.Categories
                 throw new ArgumentNullException(nameof(input));
             }
 
-           
+            // Generate next ID if input.Id is 0 (new category)
+            int categoryId = input.Id;
+            if (categoryId == 0)
+            {
+                // Get the next available ID from the repository
+                categoryId = await _categoryRepository.GetNextIdAsync();
+            }
+
             var category = await _categoryManager.CreateAsync(
-                input.Id,
+                categoryId,
                 input.NameAr,
                 input.NameEn,
                 input.DescriptionAr,

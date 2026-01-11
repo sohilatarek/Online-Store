@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using OnlineStore.Permissions;
 using System;
 using System.Collections.Generic;
@@ -19,17 +20,20 @@ namespace OnlineStore.Products
         private readonly IDistributedCache<List<ProductDto>> _listCache;
         private readonly IDistributedCache<ProductDto> _singleCache;
         private readonly ICurrentTenant _currentTenant;
+        private readonly ILogger<CachedProductAppService> _logger;
 
         public CachedProductAppService(
             ProductsAppService innerService,
             IDistributedCache<List<ProductDto>> listCache,
             IDistributedCache<ProductDto> singleCache,
-            ICurrentTenant currentTenant)
+            ICurrentTenant currentTenant,
+            ILogger<CachedProductAppService> logger)
         {
             _innerService = innerService;
             _listCache = listCache;
             _singleCache = singleCache;
             _currentTenant = currentTenant;
+            _logger = logger;
         }
 
         public async Task<PagedResultDto<ProductDto>> GetListAsync(PagedAndSortedResultRequestDto input)
@@ -39,8 +43,7 @@ namespace OnlineStore.Products
 
         public async Task<ProductDto> GetAsync(int id)
         {
-            var tenantId = _currentTenant.Id?.ToString() ?? "host";
-            var cacheKey = $"Products:ById:{id}:{tenantId}";
+            var cacheKey = GetProductCacheKey(id);
 
             return await _singleCache.GetOrAddAsync(
                 cacheKey,
@@ -61,7 +64,7 @@ namespace OnlineStore.Products
             }
 
             var result = await _innerService.CreateAsync(input);
-            await InvalidateCacheAsync(result.CategoryId);
+            await SafeInvalidateCacheAsync(result.CategoryId);
             return result;
         }
 
@@ -73,23 +76,36 @@ namespace OnlineStore.Products
                 throw new ArgumentNullException(nameof(input));
             }
 
+            // Get old product to capture old category ID for cache invalidation
+            var oldProduct = await _innerService.GetAsync(id);
+            var oldCategoryId = oldProduct.CategoryId;
+
             var result = await _innerService.UpdateAsync(id, input);
-            await InvalidateCacheAsync(result.CategoryId, id);
+            
+            // Invalidate both old and new category caches if category changed
+            await SafeInvalidateCacheAsync(oldCategoryId, id);
+            if (oldCategoryId != result.CategoryId)
+            {
+                await SafeInvalidateCacheAsync(result.CategoryId, id);
+            }
+            
             return result;
         }
 
         [Authorize(OnlineStorePermissions.Products.Delete)] 
         public async Task DeleteAsync(int id)
         {
+            // Get category ID before deletion (more efficient than full GetAsync)
             var product = await _innerService.GetAsync(id);
+            var categoryId = product.CategoryId;
+            
             await _innerService.DeleteAsync(id);
-            await InvalidateCacheAsync(product.CategoryId, id);
+            await SafeInvalidateCacheAsync(categoryId, id);
         }
 
         public async Task<List<ProductDto>> GetByCategoryAsync(int categoryId, bool onlyPublished = false)
         {
-            var tenantId = _currentTenant.Id?.ToString() ?? "host";
-            var cacheKey = $"Products:ByCategoryId:{categoryId}:{onlyPublished}:{tenantId}";
+            var cacheKey = GetProductsByCategoryCacheKey(categoryId, onlyPublished);
 
             return await _listCache.GetOrAddAsync(
                 cacheKey,
@@ -104,9 +120,7 @@ namespace OnlineStore.Products
         [AllowAnonymous] 
         public async Task<List<ProductDto>> GetPublishedProductsAsync(int? categoryId = null)
         {
-            var tenantId = _currentTenant.Id?.ToString() ?? "host";
-            var categoryKey = categoryId?.ToString() ?? "all";
-            var cacheKey = $"Products:Published:{categoryKey}:{tenantId}";
+            var cacheKey = GetPublishedProductsCacheKey(categoryId);
 
             return await _listCache.GetOrAddAsync(
                 cacheKey,
@@ -122,7 +136,7 @@ namespace OnlineStore.Products
         public async Task<ProductDto> PublishAsync(int id)
         {
             var result = await _innerService.PublishAsync(id);
-            await InvalidateCacheAsync(result.CategoryId, id);
+            await SafeInvalidateCacheAsync(result.CategoryId, id);
             return result;
         }
 
@@ -130,7 +144,7 @@ namespace OnlineStore.Products
         public async Task<ProductDto> UnpublishAsync(int id)
         {
             var result = await _innerService.UnpublishAsync(id);
-            await InvalidateCacheAsync(result.CategoryId, id);
+            await SafeInvalidateCacheAsync(result.CategoryId, id);
             return result;
         }
 
@@ -138,7 +152,7 @@ namespace OnlineStore.Products
         public async Task<ProductDto> UpdateStockAsync(int id, UpdateStockDto input)
         {
             var result = await _innerService.UpdateStockAsync(id, input);
-            await InvalidateCacheAsync(result.CategoryId, id);
+            await SafeInvalidateCacheAsync(result.CategoryId, id);
             return result;
         }
 
@@ -146,7 +160,7 @@ namespace OnlineStore.Products
         public async Task<ProductDto> AdjustStockAsync(int id, AdjustStockDto input)
         {
             var result = await _innerService.AdjustStockAsync(id, input);
-            await InvalidateCacheAsync(result.CategoryId, id);
+            await SafeInvalidateCacheAsync(result.CategoryId, id);
             return result;
         }
 
@@ -154,7 +168,7 @@ namespace OnlineStore.Products
         public async Task BulkUpdateStockAsync(BulkUpdateStockDto input)
         {
             await _innerService.BulkUpdateStockAsync(input);
-            await InvalidateAllProductCachesAsync();
+            await SafeInvalidateAllProductCachesAsync();
         }
 
         public async Task<StockCheckResultDto> CheckStockAsync(CheckStockInput input)
@@ -172,35 +186,86 @@ namespace OnlineStore.Products
             return await _innerService.GetOutOfStockAsync();
         }
 
+        // ==========================================
+        // CACHE KEY HELPERS
+        // ==========================================
+
+        private string GetTenantId() => _currentTenant.Id?.ToString() ?? "host";
+        
+        private string GetProductCacheKey(int productId) => $"Products:ById:{productId}:{GetTenantId()}";
+        
+        private string GetProductsByCategoryCacheKey(int categoryId, bool onlyPublished) => 
+            $"Products:ByCategoryId:{categoryId}:{onlyPublished}:{GetTenantId()}";
+        
+        private string GetPublishedProductsCacheKey(int? categoryId)
+        {
+            var categoryKey = categoryId?.ToString() ?? "all";
+            return $"Products:Published:{categoryKey}:{GetTenantId()}";
+        }
+
+        // ==========================================
+        // CACHE INVALIDATION (WITH ERROR HANDLING)
+        // ==========================================
+
+        private async Task SafeInvalidateCacheAsync(int categoryId, int? productId = null)
+        {
+            try
+            {
+                await InvalidateCacheAsync(categoryId, productId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, 
+                    "Failed to invalidate cache for category {CategoryId}, product {ProductId}. " +
+                    "Cache may be stale but operation succeeded.", 
+                    categoryId, productId);
+                // Don't throw - cache invalidation failure shouldn't break the operation
+            }
+        }
+
+        private async Task SafeInvalidateAllProductCachesAsync()
+        {
+            try
+            {
+                await InvalidateAllProductCachesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, 
+                    "Failed to invalidate all product caches. " +
+                    "Cache may be stale but operation succeeded.");
+                // Don't throw - cache invalidation failure shouldn't break the operation
+            }
+        }
+
         private async Task InvalidateCacheAsync(int categoryId, int? productId = null)
         {
-            var tenantId = _currentTenant.Id?.ToString() ?? "host";
-            
             // Invalidate category-specific caches
-            await _listCache.RemoveAsync($"Products:ByCategoryId:{categoryId}:true:{tenantId}");
-            await _listCache.RemoveAsync($"Products:ByCategoryId:{categoryId}:false:{tenantId}");
-            await _listCache.RemoveAsync($"Products:Published:{categoryId}:{tenantId}");
+            await _listCache.RemoveAsync(GetProductsByCategoryCacheKey(categoryId, true));
+            await _listCache.RemoveAsync(GetProductsByCategoryCacheKey(categoryId, false));
+            await _listCache.RemoveAsync(GetPublishedProductsCacheKey(categoryId));
             
             // Invalidate global published products cache
-            await _listCache.RemoveAsync($"Products:Published:all:{tenantId}");
+            await _listCache.RemoveAsync(GetPublishedProductsCacheKey(null));
             
             // Invalidate aggregate query caches
+            var tenantId = GetTenantId();
             await _listCache.RemoveAsync($"Products:LowStock:{tenantId}");
             await _listCache.RemoveAsync($"Products:OutOfStock:{tenantId}");
 
             // Invalidate single product cache if product ID provided
             if (productId.HasValue)
             {
-                await _singleCache.RemoveAsync($"Products:ById:{productId.Value}:{tenantId}");
+                await _singleCache.RemoveAsync(GetProductCacheKey(productId.Value));
             }
         }
 
         private async Task InvalidateAllProductCachesAsync()
         {
-            var tenantId = _currentTenant.Id?.ToString() ?? "host";
+            var tenantId = GetTenantId();
             
             // Invalidate all published products caches
-            await _listCache.RemoveAsync($"Products:Published:all:{tenantId}");
+            await _listCache.RemoveAsync(GetPublishedProductsCacheKey(null));
             
             // Invalidate aggregate query caches
             await _listCache.RemoveAsync($"Products:LowStock:{tenantId}");

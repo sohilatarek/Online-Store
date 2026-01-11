@@ -48,6 +48,11 @@
     "Validation:Product:CannotPublishInactive": "Cannot publish an inactive product. Please activate it first",
     "Validation:Product:PublishingWithZeroStock": "Warning: You are publishing a product with zero stock",
 
+    "Product:BulkUpdate:ItemsRequired": "Items list cannot be null or empty",
+    "Product:BulkUpdate:TooManyItems": "Cannot update more than {MaxSize} products at once",
+    "Product:BulkUpdate:DuplicateProductIds": "Duplicate product IDs found: {Ids}",
+    "Product:BulkUpdate:NegativeStock": "Stock quantity cannot be negative for product ID {ProductId}",
+
     "BusinessException:CategoryNameExists": "Category with name '{Name}' already exists",
     "BusinessException:CategoryHasProducts": "Cannot delete category '{CategoryName}' because it has {ProductCount} products. Please reassign or delete products first",
     "BusinessException:ProductSKUExists": "Product with SKU '{SKU}' already exists",

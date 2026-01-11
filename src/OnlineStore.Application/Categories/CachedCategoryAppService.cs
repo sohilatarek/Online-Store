@@ -36,18 +36,28 @@ namespace OnlineStore.Categories
             _currentTenant = currentTenant;
             _logger = logger;
         }
-
-       
+        [Authorize(OnlineStorePermissions.Categories.Default)]
         public async Task<PagedResultDto<CategoryDto>> GetListAsync(PagedAndSortedResultRequestDto input)
         {
-            return await _innerService.GetListAsync(input);
+            _logger.LogInformation("GetListAsync called with input: {@Input}", input);
+            try
+            {
+                var result = await _innerService.GetListAsync(input);
+                _logger.LogInformation("GetListAsync completed successfully. TotalCount: {TotalCount}", result.TotalCount);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetListAsync. Exception Type: {ExceptionType}, Message: {Message}", 
+                    ex.GetType().Name, ex.Message);
+                throw;
+            }
         }
 
        
         public async Task<CategoryDto> GetAsync(int id)
         {
-            var tenantId = _currentTenant.Id?.ToString() ?? "host";
-            var cacheKey = $"Categories:ById:{id}:{tenantId}";
+            var cacheKey = GetCategoryCacheKey(id);
 
             return await _singleCache.GetOrAddAsync(
                 cacheKey,
@@ -63,7 +73,7 @@ namespace OnlineStore.Categories
         public async Task<CategoryDto> CreateAsync(CreateUpdateCategoryDto input)
         {
             var result = await _innerService.CreateAsync(input);
-            await InvalidateCacheAsync();
+            await SafeInvalidateCacheAsync();
             return result;
         }
 
@@ -72,7 +82,7 @@ namespace OnlineStore.Categories
         public async Task<CategoryDto> UpdateAsync(int id, CreateUpdateCategoryDto input)
         {
             var result = await _innerService.UpdateAsync(id, input);
-            await InvalidateCacheAsync(id);
+            await SafeInvalidateCacheAsync(id);
             return result;
         }
 
@@ -81,34 +91,42 @@ namespace OnlineStore.Categories
         public async Task DeleteAsync(int id)
         {
             await _innerService.DeleteAsync(id);
-            await InvalidateCacheAsync(id);
+            await SafeInvalidateCacheAsync(id);
         }
 
-    
-
+        [Authorize(OnlineStorePermissions.Categories.Default)]
         public async Task<PagedResultDto<CategoryDto>> GetFilteredListAsync(GetCategoriesInput input)
         {
-            return await _innerService.GetFilteredListAsync(input);
+            _logger.LogInformation("GetFilteredListAsync called with input: {@Input}", input);
+            try
+            {
+                _logger.LogInformation("Calling inner service GetFilteredListAsync");
+                var result = await _innerService.GetFilteredListAsync(input);
+                _logger.LogInformation("GetFilteredListAsync completed successfully. TotalCount: {TotalCount}, ItemsCount: {ItemsCount}", 
+                    result.TotalCount, result.Items?.Count ?? 0);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetFilteredListAsync for input: {@Input}. Exception Type: {ExceptionType}, Message: {Message}, StackTrace: {StackTrace}", 
+                    input, ex.GetType().Name, ex.Message, ex.StackTrace);
+                throw;
+            }
         }
 
         [AllowAnonymous] 
         public async Task<List<CategoryDto>> GetActiveListAsync()
         {
-            var tenantId = _currentTenant.Id?.ToString() ?? "host";
-            var cacheKey = $"Categories:Active:{tenantId}";
+            var cacheKey = GetActiveCategoriesCacheKey();
 
-            var cached = await _listCache.GetAsync(cacheKey);
-            if (cached != null)
-            {
-                _logger.LogInformation("Cache HIT for key: {CacheKey}", cacheKey);
-                return cached;
-            }
-
-            _logger.LogInformation("Cache MISS for key: {CacheKey}", cacheKey);
-
+            // GetOrAddAsync already handles cache check internally, no need for manual check
             return await _listCache.GetOrAddAsync(
                 cacheKey,
-                async () => await _innerService.GetActiveListAsync(),
+                async () => 
+                {
+                    _logger.LogInformation("Cache MISS for key: {CacheKey}", cacheKey);
+                    return await _innerService.GetActiveListAsync();
+                },
                 () => new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
@@ -125,7 +143,7 @@ namespace OnlineStore.Categories
         public async Task<CategoryDto> ChangeDisplayOrderAsync(int id, int newOrder)
         {
             var result = await _innerService.ChangeDisplayOrderAsync(id, newOrder);
-            await InvalidateCacheAsync(id);
+            await SafeInvalidateCacheAsync(id);
             return result;
         }
 
@@ -133,7 +151,7 @@ namespace OnlineStore.Categories
         public async Task<CategoryDto> ActivateAsync(int id)
         {
             var result = await _innerService.ActivateAsync(id);
-            await InvalidateCacheAsync(id);
+            await SafeInvalidateCacheAsync(id);
             return result;
         }
 
@@ -141,18 +159,46 @@ namespace OnlineStore.Categories
         public async Task<CategoryDto> DeactivateAsync(int id)
         {
             var result = await _innerService.DeactivateAsync(id);
-            await InvalidateCacheAsync(id);
+            await SafeInvalidateCacheAsync(id);
             return result;
+        }
+
+        // ==========================================
+        // CACHE KEY HELPERS
+        // ==========================================
+
+        private string GetTenantId() => _currentTenant.Id?.ToString() ?? "host";
+        
+        private string GetCategoryCacheKey(int categoryId) => $"Categories:ById:{categoryId}:{GetTenantId()}";
+        
+        private string GetActiveCategoriesCacheKey() => $"Categories:Active:{GetTenantId()}";
+
+        // ==========================================
+        // CACHE INVALIDATION (WITH ERROR HANDLING)
+        // ==========================================
+
+        private async Task SafeInvalidateCacheAsync(int? categoryId = null)
+        {
+            try
+            {
+                await InvalidateCacheAsync(categoryId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, 
+                    "Failed to invalidate cache for category {CategoryId}. " +
+                    "Cache may be stale but operation succeeded.", 
+                    categoryId);
+                       }
         }
 
         private async Task InvalidateCacheAsync(int? categoryId = null)
         {
-            var tenantId = _currentTenant.Id?.ToString() ?? "host";
-            await _listCache.RemoveAsync($"Categories:Active:{tenantId}");
+            await _listCache.RemoveAsync(GetActiveCategoriesCacheKey());
 
             if (categoryId.HasValue)
             {
-                await _singleCache.RemoveAsync($"Categories:ById:{categoryId.Value}:{tenantId}");
+                await _singleCache.RemoveAsync(GetCategoryCacheKey(categoryId.Value));
             }
         }
     }

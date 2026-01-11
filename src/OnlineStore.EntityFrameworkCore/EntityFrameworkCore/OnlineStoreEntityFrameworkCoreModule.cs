@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OnlineStore.Categories;
 using OnlineStore.Products;
-using OnlineStore.Repositories;
 using System;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;

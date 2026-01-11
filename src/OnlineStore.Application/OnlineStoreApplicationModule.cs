@@ -65,6 +65,17 @@ public class OnlineStoreApplicationModule : AbpModule
             return new CachedCategoryAppService(innerService, listCache, singleCache, currentTenant, logger);
         });
 
+          services.AddTransient<CachedCategoryAppService>(provider =>
+        {
+            var innerService = provider.GetRequiredService<CategoriesAppService>();
+            var listCache = provider.GetRequiredService<IDistributedCache<List<CategoryDto>>>();
+            var singleCache = provider.GetRequiredService<IDistributedCache<CategoryDto>>();
+            var currentTenant = provider.GetRequiredService<ICurrentTenant>();
+            var logger = provider.GetRequiredService<ILogger<CachedCategoryAppService>>();
+
+            return new CachedCategoryAppService(innerService, listCache, singleCache, currentTenant, logger);
+        });
+
         services.AddTransient<IProductsAppService>(provider =>
         {
             // Resolve inner service directly (concrete type)
@@ -74,9 +85,21 @@ public class OnlineStoreApplicationModule : AbpModule
             var listCache = provider.GetRequiredService<IDistributedCache<List<ProductDto>>>();
             var singleCache = provider.GetRequiredService<IDistributedCache<ProductDto>>();
             var currentTenant = provider.GetRequiredService<ICurrentTenant>();
+            var logger = provider.GetRequiredService<ILogger<CachedProductAppService>>();
 
             // Return cached wrapper that wraps the real service
-            return new CachedProductAppService(innerService, listCache, singleCache, currentTenant);
+            return new CachedProductAppService(innerService, listCache, singleCache, currentTenant, logger);
+        });
+
+        services.AddTransient<CachedProductAppService>(provider =>
+        {
+            var innerService = provider.GetRequiredService<ProductsAppService>();
+            var listCache = provider.GetRequiredService<IDistributedCache<List<ProductDto>>>();
+            var singleCache = provider.GetRequiredService<IDistributedCache<ProductDto>>();
+            var currentTenant = provider.GetRequiredService<ICurrentTenant>();
+            var logger = provider.GetRequiredService<ILogger<CachedProductAppService>>();
+
+            return new CachedProductAppService(innerService, listCache, singleCache, currentTenant, logger);
         });
 
     }
