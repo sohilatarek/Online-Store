@@ -7,13 +7,16 @@ const routes: Routes = [{
   path: 'add',
   pathMatch: 'full',
   component: AddProduct
-
+},
+{
+  path: 'edit/:id',
+  pathMatch: 'full',
+  component: AddProduct
 },
 {
   path: '',
   pathMatch: 'full',
   component: ListProducts
-
 }];
 
 @NgModule({

@@ -1,321 +1,152 @@
-<div class="row mb-3">
-  <div class="col-xl-6 col-12 d-flex">
-    <div class="card h-lg-100 w-100 overflow-hidden">
+<div class="home-container">
+  <!-- Hero Section -->
+  <div class="hero-section mb-5">
+    <div class="card hero-card">
       <div class="card-body">
-        <div class="starting-content pe-5">
+        <div class="hero-content">
           @if(!hasLoggedIn){
-          <h3>Welcome</h3>
-          <p class="lead text-muted mb-2">
-            {{ '::LongWelcomeMessage' | abpLocalization }}
-          </p>
-          <a (click)="login()" class="px-4 btn btn-primary mb-4" role="button">
-            <i class="fa fa-sign-in"></i>
-            {{ 'AbpAccount::Login' | abpLocalization }}
-          </a>
+          <div class="welcome-section">
+            <h1 class="hero-title">Welcome to Online Store</h1>
+            <p class="hero-description">
+              Your comprehensive e-commerce management platform. Manage products, categories, inventory, and orders all in one place.
+            </p>
+            <a (click)="login()" class="btn btn-primary btn-lg px-5 mt-3" role="button">
+              <i class="fa fa-sign-in me-2"></i>
+              {{ 'AbpAccount::Login' | abpLocalization }}
+            </a>
+          </div>
+          } @else {
+          <div class="welcome-section">
+            <h1 class="hero-title">Welcome Back!</h1>
+            <p class="hero-description">
+              Manage your online store efficiently. Add products, organize categories, track inventory, and monitor your business performance.
+            </p>
+          </div>
           }
-
-          <h4>Getting Started</h4>
-          <p class="lead text-muted mb-2">
-            Learn how to create and run a new web application using the application startup
-            template.
-          </p>
-          <a
-            href="https://abp.io/docs/latest/getting-started"
-            class="btn btn-brand mb-4"
-            target="_blank"
-          >
-            Getting Started
-          </a>
-
-          <h4>Web Application Development Tutorial</h4>
-          <p class="lead text-muted mb-2">
-            Learn how to build an ABP based web application named Acme.BookStore.
-          </p>
-          <a
-            href="https://abp.io/docs/latest/tutorials/book-store/part-01?UI=NG&DB=EF"
-            class="btn btn-brand mb-4"
-            target="_blank"
-          >
-            Explore Tutorial
-          </a>
         </div>
-        <img class="card-bg-image" src="assets/images/getting-started/bg-01.png" />
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-3 col-md-6 d-flex">
-    <div class="row">
-      <div class="col-12 d-flex">
-        <div class="card overflow-hidden mb-3">
-          <div class="card-body d-flex flex-column">
-            <div class="abp-support abp-logo mb-2"></div>
-            <p class="text-muted mb-2">
-              You can check for similar problems and solutions, or open a new topic to discuss your
-              specific issue.
-            </p>
-            <a
-              class="btn btn-brand soft w-50"
-              href="https://abp.io/support/questions"
-              target="_blank"
-            >
-              Visit Support
-            </a>
-            <img
-              style="margin-bottom: -24px"
-              class="w-100 mt-auto"
-              src="assets/images/getting-started/img-support.png"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="col-12 d-flex">
-        <div class="card h-md-100 overflow-hidden">
-          <div class="card-body d-flex flex-column">
-            <div class="abp-blog abp-logo mb-2"></div>
-            <p class="text-muted mb-2">
-              You can find content on .NET development, cross-platform, ASP.NET application
-              templates, ABP-related news, and more.
-            </p>
-            <a
-              class="btn btn-brand soft w-50"
-              href="https://abp.io/blog"
-              target="_blank"
-            >
-              Visit Blog
-            </a>
-            <img
-              style="margin-bottom: -24px"
-              class="w-100 mt-auto"
-              src="assets/images/getting-started/img-blog.png"
-            />
+        <div class="hero-image">
+          <div class="floating-icon">
+            <i class="fa fa-shopping-cart"></i>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-xl-3 col-md-6 d-flex">
-    <div class="card h-100 overflow-hidden">
-      <div class="card-body">
-        <div class="abp-community abp-logo mb-2"></div>
-        <p class="lead text-muted">
-          A unique community platform for <span class="fw-bold">ABP Lovers!</span>
-        </p>
-        <p class="text-muted mb-2">
-          Explore all ABP users' experiences with the ABP Framework, discover articles and videos on
-          how to use ABP, and join raffles for a chance to win surprise gifts!
-        </p>
-        <a
-          class="btn btn-brand soft mb-3"
-          href="https://abp.io/community/"
-          target="_blank"
-        >
-          Join ABP Community
-        </a>
-      </div>
-      <img class="mt-3 w-100" src="assets/images/getting-started/img-community.png" />
-    </div>
-  </div>
-</div>
 
-<div class="row">
-  <div class="col-xl-3 col-lg-4">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title text-body">More from ABP.IO</div>
+  <!-- Features Section -->
+  <div class="row g-4 mb-5">
+    <div class="col-lg-4 col-md-6">
+      <div class="feature-card card h-100">
+        <div class="card-body text-center">
+          <div class="feature-icon">
+            <i class="fa fa-box"></i>
+          </div>
+          <h4 class="feature-title">Product Management</h4>
+          <p class="feature-description">
+            Easily add, edit, and manage your product catalog. Track inventory, set prices, and control product visibility.
+          </p>
+          <a routerLink="/products" class="btn btn-outline-primary">
+            Manage Products <i class="fa fa-arrow-right ms-2"></i>
+          </a>
+        </div>
       </div>
-      <div class="card-body pt-0">
-        <div>
-          <table class="table mb-0">
-            <tbody>
-              <tr>
-                <td class="ps-0 d-flex">
-                  <div
-                    class="rounded-circle me-2 flex-center bg-brand soft"
-                    style="width: 20px; height: 20px"
-                  >
-                    <i class="bi bi-check fs-4"></i>
-                  </div>
-                  <div>Latest Release Logs</div>
-                </td>
-                <td class="text-end pe-0 opacity-25">
-                  <a href="https://github.com/abpframework/abp/releases" target="_blank">
-                    <i class="fa fa-external-link text-dark"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="ps-0 d-flex">
-                  <div
-                    class="rounded-circle me-2 flex-center bg-brand soft"
-                    style="width: 20px; height: 20px"
-                  >
-                    <i class="bi bi-check fs-4"></i>
-                  </div>
-                  <div>Video Courses</div>
-                </td>
-                <td class="text-end pe-0 opacity-25">
-                  <a href="https://abp.io/video-courses/essentials" target="_blank">
-                    <i class="fa fa-external-link text-dark"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="ps-0 d-flex">
-                  <div
-                    class="rounded-circle me-2 flex-center bg-brand soft"
-                    style="width: 20px; height: 20px"
-                  >
-                    <i class="bi bi-check fs-4"></i>
-                  </div>
-                  <div>Samples</div>
-                </td>
-                <td class="text-end pe-0 opacity-25">
-                  <a href="https://abp.io/docs/latest/Samples/Index" target="_blank">
-                    <i class="fa fa-external-link text-dark"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="ps-0 d-flex">
-                  <div
-                    class="rounded-circle me-2 flex-center bg-brand soft"
-                    style="width: 20px; height: 20px"
-                  >
-                    <i class="bi bi-check fs-4"></i>
-                  </div>
-                  <div>Books</div>
-                </td>
-                <td class="text-end pe-0 opacity-25">
-                  <a href="https://abp.io/books" target="_blank">
-                    <i class="fa fa-external-link text-dark"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="ps-0 d-flex border-bottom-0">
-                  <div
-                    class="rounded-circle me-2 flex-center bg-brand soft"
-                    style="width: 20px; height: 20px"
-                  >
-                    <i class="bi bi-check fs-4"></i>
-                  </div>
-                  <div>FAQ</div>
-                </td>
-                <td class="text-end pe-0 opacity-25 border-bottom-0">
-                  <a href="https://abp.io/faq" target="_blank">
-                    <i class="fa fa-external-link text-dark"></i>
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+      <div class="feature-card card h-100">
+        <div class="card-body text-center">
+          <div class="feature-icon">
+            <i class="fa fa-folder"></i>
+          </div>
+          <h4 class="feature-title">Category Organization</h4>
+          <p class="feature-description">
+            Organize your products into categories for better navigation and management. Support for bilingual category names.
+          </p>
+          <a routerLink="/categories" class="btn btn-outline-primary">
+            Manage Categories <i class="fa fa-arrow-right ms-2"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+      <div class="feature-card card h-100">
+        <div class="card-body text-center">
+          <div class="feature-icon">
+            <i class="fa fa-chart-line"></i>
+          </div>
+          <h4 class="feature-title">Inventory Tracking</h4>
+          <p class="feature-description">
+            Monitor stock levels, track low inventory alerts, and manage product availability in real-time.
+          </p>
+          <a routerLink="/products" class="btn btn-outline-primary">
+            View Inventory <i class="fa fa-arrow-right ms-2"></i>
+          </a>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-xl-6 col-lg-8 d-flex">
-    <div class="card">
-      <div class="card-body d-flex">
-        <div class="row align-items-center">
-          <div class="col-md-8">
-            <p class="text-muted mb-0">THE OFFICIAL GUIDE</p>
-            <h3>Mastering ABP Framework</h3>
-            <p class="text-muted">
-              Written by the creator of the ABP Framework, this book will help you gain a complete
-              understanding of the framework and modern web application development techniques.
-            </p>
-            <div class="d-md-flex mb-2 mb-md-0">
-              <a
-                href="https://www.amazon.com/gp/product/B097Z2DM8Q"
-                target="_blank"
-                class="btn btn-primary soft me-md-2 mb-2 mb-md-0"
-              >
-                Buy on Amazon US
+
+  <!-- Quick Stats Section -->
+  @if(hasLoggedIn) {
+  <div class="row g-4 mb-5">
+    <div class="col-12">
+      <div class="card stats-card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">
+            <i class="fa fa-dashboard me-2"></i>Quick Access
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3 col-sm-6">
+              <a routerLink="/products" class="quick-link-card">
+                <div class="quick-link-icon bg-primary">
+                  <i class="fa fa-box"></i>
+                </div>
+                <div class="quick-link-text">
+                  <h6>Products</h6>
+                  <span>Manage Products</span>
+                </div>
               </a>
-              <a
-                href="https://www.packtpub.com/product/mastering-abp-framework/9781801079242"
-                target="_blank"
-                class="btn btn-primary soft mb-2 mb-md-0"
-              >
-                Buy on PACKT
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <a routerLink="/categories" class="quick-link-card">
+                <div class="quick-link-icon bg-success">
+                  <i class="fa fa-folder"></i>
+                </div>
+                <div class="quick-link-text">
+                  <h6>Categories</h6>
+                  <span>Organize Categories</span>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <a routerLink="/products" [queryParams]="{isActive: 'true'}" class="quick-link-card">
+                <div class="quick-link-icon bg-info">
+                  <i class="fa fa-eye"></i>
+                </div>
+                <div class="quick-link-text">
+                  <h6>Published</h6>
+                  <span>View Published</span>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <a routerLink="/products" [queryParams]="{isLowStock: 'true'}" class="quick-link-card">
+                <div class="quick-link-icon bg-warning">
+                  <i class="fa fa-exclamation-triangle"></i>
+                </div>
+                <div class="quick-link-text">
+                  <h6>Low Stock</h6>
+                  <span>Check Alerts</span>
+                </div>
               </a>
             </div>
           </div>
-          <div class="col">
-            <img class="w-100" src="assets/images/getting-started/book.png" />
-          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-xl-3 col-lg-4">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title text-body">Follow us on Social Media</div>
-      </div>
-      <div class="card-body pt-0">
-        <div>
-          <table class="table mb-0">
-            <tbody>
-              <tr>
-                <td class="ps-0 d-flex">
-                  <div class="logo-x me-2"></div>
-                  <div>X.com</div>
-                </td>
-                <td class="text-end pe-0 opacity-25">
-                  <a href="https://twitter.com/abpframework" target="_blank">
-                    <i class="fa fa-external-link text-dark"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="ps-0 d-flex">
-                  <img src="assets/images/getting-started/discord.svg" class="me-2" />
-                  <div>Discord</div>
-                </td>
-                <td class="text-end pe-0 opacity-25">
-                  <a href="https://abp.io/community/discord" target="_blank">
-                    <i class="fa fa-external-link text-dark"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="ps-0 d-flex">
-                  <img src="assets/images/getting-started/stack-overflow.svg" class="me-2" />
-                  <div>Stack Overflow</div>
-                </td>
-                <td class="text-end pe-0 opacity-25">
-                  <a href="https://stackoverflow.com/questions/tagged/abp" target="_blank">
-                    <i class="fa fa-external-link text-dark"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="ps-0 d-flex">
-                  <img src="assets/images/getting-started/youtube.svg" class="me-2" />
-                  <div>YouTube</div>
-                </td>
-                <td class="text-end pe-0 opacity-25">
-                  <a href="https://www.youtube.com/@Volosoft" target="_blank">
-                    <i class="fa fa-external-link text-dark"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="ps-0 d-flex border-bottom-0">
-                  <img src="assets/images/getting-started/instagram.svg" class="me-2" />
-                  <div>Instagram</div>
-                </td>
-                <td class="text-end pe-0 opacity-25 border-bottom-0">
-                  <a href="https://www.instagram.com/abpframework/" target="_blank">
-                    <i class="fa fa-external-link text-dark"></i>
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+  }
 </div>

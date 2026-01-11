@@ -34,7 +34,7 @@ export class AddProduct implements OnInit {
 
   ngOnInit(): void {
     this.loadCategories();
-    
+
     // Check if we're in edit mode
     this.route.params.subscribe(params => {
       if (params['id']) {
@@ -122,18 +122,23 @@ export class AddProduct implements OnInit {
 
     this.saving = true;
     const formValue = this.productForm.value;
+
+    const categoryId = formValue.categoryId != null
+      ? (typeof formValue.categoryId === 'string' ? parseInt(formValue.categoryId, 10) : Number(formValue.categoryId))
+      : 0;
+
     const productDto: CreateUpdateProductDto = {
       id: this.isEditMode ? this.productId! : 0,
-      nameAr: formValue.nameAr,
-      nameEn: formValue.nameEn,
-      descriptionAr: formValue.descriptionAr,
-      descriptionEn: formValue.descriptionEn,
-      categoryId: formValue.categoryId,
-      sku: formValue.sku.toUpperCase(),
-      price: formValue.price,
-      stockQuantity: formValue.stockQuantity,
-      isActive: formValue.isActive,
-      isPublished: formValue.isActive ? formValue.isPublished : false
+      nameAr: formValue.nameAr || '',
+      nameEn: formValue.nameEn || '',
+      descriptionAr: formValue.descriptionAr || '',
+      descriptionEn: formValue.descriptionEn || '',
+      categoryId: categoryId,
+      sku: (formValue.sku || '').toUpperCase().trim(),
+      price: formValue.price != null ? (typeof formValue.price === 'string' ? parseFloat(formValue.price) : Number(formValue.price)) : 0,
+      stockQuantity: formValue.stockQuantity != null ? (typeof formValue.stockQuantity === 'string' ? parseInt(formValue.stockQuantity, 10) : Number(formValue.stockQuantity)) : 0,
+      isActive: Boolean(formValue.isActive),
+      isPublished: Boolean(formValue.isActive ? formValue.isPublished : false)
     };
 
     const operation = this.isEditMode
@@ -148,7 +153,32 @@ export class AddProduct implements OnInit {
         },
         error: (error) => {
           console.error('Error saving product:', error);
-          // Handle error - could show toast notification
+
+
+          if (error?.error?.error?.validationErrors) {
+            const validationErrors = error.error.error.validationErrors;
+
+            // Apply validation errors to form controls
+            validationErrors.forEach((validationError: any) => {
+              const fieldName = validationError.members?.[0] || '';
+              const errorMessage = validationError.message || '';
+
+              if (fieldName) {
+                const control = this.productForm.get(fieldName);
+                if (control) {
+                  // Set custom error on the control
+                  control.setErrors({
+                    serverError: true,
+                    serverErrorMessage: errorMessage
+                  });
+                  control.markAsTouched();
+                }
+              }
+            });
+
+            // Mark form as touched to show errors
+            this.markFormGroupTouched(this.productForm);
+          }
         }
       });
   }
@@ -169,6 +199,11 @@ export class AddProduct implements OnInit {
 
   getFieldError(fieldName: string): string {
     const field = this.productForm.get(fieldName);
+
+    if (field?.hasError('serverError') && field.errors?.['serverErrorMessage']) {
+      return field.errors['serverErrorMessage'];
+    }
+
     if (field?.hasError('required')) {
       return `${this.getFieldLabel(fieldName)} is required`;
     }
