@@ -88,8 +88,6 @@ export class ListProducts implements OnInit {
 
     // Get form values
     const formValue = this.searchForm.value;
-    console.log('Form value before processing:', formValue);
-    console.log('Form searchTerm:', formValue.searchTerm);
 
     const input: GetProductsInput = {
       skipCount: this.skipCount,
@@ -99,25 +97,20 @@ export class ListProducts implements OnInit {
     };
 
     const searchTermValue = formValue.searchTerm;
-    console.log('Raw searchTerm from form:', searchTermValue, 'type:', typeof searchTermValue);
 
     if (searchTermValue != null && searchTermValue !== undefined && searchTermValue !== '') {
       if (typeof searchTermValue === 'string') {
         const trimmed = searchTermValue.trim();
         if (trimmed !== '') {
           input.searchTerm = trimmed;
-          console.log('Keeping searchTerm:', trimmed);
         } else {
           delete input.searchTerm;
-          console.log('Deleted searchTerm - empty after trim');
         }
       } else {
         delete input.searchTerm;
-        console.log('Deleted searchTerm - not a string');
       }
     } else {
       delete input.searchTerm;
-      console.log('Deleted searchTerm - null/undefined/empty');
     }
 
     Object.keys(input).forEach(key => {
@@ -125,10 +118,6 @@ export class ListProducts implements OnInit {
         delete input[key];
       }
     });
-
-    console.log('Sending search request with input:', input);
-    console.log('SearchTerm value:', input.searchTerm);
-    console.log('Has searchTerm?', 'searchTerm' in input);
 
     const params: any = {
       sorting: input.sorting,
@@ -141,18 +130,12 @@ export class ListProducts implements OnInit {
     if (input.isPublished != null) params.isPublished = input.isPublished;
     if (input.searchTerm != null && input.searchTerm !== '' && input.searchTerm !== undefined) {
       params.searchTerm = input.searchTerm;
-      console.log('✅ Adding searchTerm to params:', input.searchTerm);
-    } else {
-      console.log('❌ searchTerm NOT added - value:', input.searchTerm);
     }
     if (input.minPrice != null) params.minPrice = input.minPrice;
     if (input.maxPrice != null) params.maxPrice = input.maxPrice;
     if (input.isLowStock != null) params.isLowStock = input.isLowStock;
     if (input.lowStockThreshold != null) params.lowStockThreshold = input.lowStockThreshold;
     if (input.isOutOfStock != null) params.isOutOfStock = input.isOutOfStock;
-
-    console.log('Final params being sent:', params);
-    console.log('Params keys:', Object.keys(params));
 
     // Call RestService directly to ensure params are sent correctly
     this.restService.request<any, PagedResultDto<ProductDto>>({
@@ -176,7 +159,6 @@ export class ListProducts implements OnInit {
     this.page = 1;
     this.skipCount = 0;
 
-    console.log('Search form value:', this.searchForm.value);
     this.loadProducts();
   }
 
